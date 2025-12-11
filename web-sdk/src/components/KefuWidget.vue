@@ -7,7 +7,7 @@
                 <img src="../assets/logo.png" alt="logo" class="w-12 h-12 object-contain">
             </div>
             <div></div>
-            <span class="font-medium text-xs p-2 whitespace-nowrap">在线咨询</span>
+            <span class="font-medium text-xs p-2 whitespace-nowrap">{{ t('onlineConsultation') }}</span>
         </button>
 
         <!-- 聊天窗口 - 使用新的 ChatWind 组件 -->
@@ -17,6 +17,7 @@
             :user-id="userId"
             @close="isOpen = false"
             @send-message="handleSendMessage"
+            @language-changed="handleLanguageChanged"
         />
     </div>
 </template>
@@ -92,10 +93,51 @@ function getOrCreateUserId() {
     return userId;
 }
 
+// 语言相关状态
+// 从localStorage加载语言设置，如果没有则使用默认中文
+const currentLanguage = ref(localStorage.getItem('chat_language') || 'zh')
+
+// 国际化翻译
+const translations = {
+  zh: {
+    onlineConsultation: '在线咨询'
+  },
+  en: {
+    onlineConsultation: 'Online Consultation'
+  },
+  hi: {
+    onlineConsultation: 'ऑनलाइन परामर्श'
+  },
+  ru: {
+    onlineConsultation: 'Онлайн-консультация'
+  },
+  de: {
+    onlineConsultation: 'Online-Beratung'
+  },
+  fr: {
+    onlineConsultation: 'Consultation en ligne'
+  },
+  ja: {
+    onlineConsultation: 'オンライン相談'
+  }
+}
+
+// 获取翻译
+const t = (key) => {
+  return translations[currentLanguage.value][key] || key
+}
+
 // 响应式数据
 const isOpen = ref(false)
 const messages = ref([])
 const userId = ref(getOrCreateUserId())
+
+// 处理语言变化
+const handleLanguageChanged = (lang) => {
+  currentLanguage.value = lang
+  // 保存语言设置到localStorage
+  localStorage.setItem('chat_language', lang)
+}
 
 // 方法
 async function handleSendMessage(text) {
