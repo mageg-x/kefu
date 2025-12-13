@@ -39,7 +39,6 @@ func newManagerServer(s *Server) *managerServer {
 		r:    r,
 		Log:  log,
 	}
-
 }
 
 func (m *managerServer) start() {
@@ -50,15 +49,15 @@ func (m *managerServer) start() {
 
 	m.r.GetGinRoute().Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPaths([]string{"/metrics"})))
 
-	st, _ := fs.Sub(version.WebFs, "web/dist")
+	st, _ := fs.Sub(version.ImWebFs, "im-web/dist")
 	m.r.GetGinRoute().NoRoute(func(c *gin.Context) {
-		if strings.HasPrefix(c.Request.URL.Path, "/web") {
+		if strings.HasPrefix(c.Request.URL.Path, "/admin/im") {
 			c.FileFromFS("./", http.FS(st))
 			return
 		}
 	})
 
-	m.r.GetGinRoute().StaticFS("/web", http.FS(st))
+	m.r.GetGinRoute().StaticFS("/admin/im", http.FS(st))
 
 	m.setRoutes()
 
@@ -71,7 +70,7 @@ func (m *managerServer) start() {
 	m.Info("ManagerServer started", zap.String("addr", m.addr))
 
 	_, port := parseAddr(m.addr)
-	m.Info(fmt.Sprintf("Manager web address： http://localhost:%d/web", port))
+	m.Info(fmt.Sprintf("Manager web address： http://localhost:%d/admin/im", port))
 }
 
 func (m *managerServer) stop() {

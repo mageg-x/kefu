@@ -10,11 +10,11 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:embed web/dist
-var webFS embed.FS
+//go:embed im-web/dist
+var imWebFS embed.FS
 
-//go:embed kefu
-var kefuFS embed.FS
+//go:embed kefu-web/dist
+var kefuWebFS embed.FS
 
 // go ldflags
 var Version string    // version
@@ -28,8 +28,8 @@ func main() {
 	version.Commit = Commit
 	version.CommitDate = CommitDate
 	version.TreeState = TreeState
-	version.WebFs = webFS
-	version.KefuFS = kefuFS
+	version.ImWebFs = imWebFS
+	version.KefuWebFS = kefuWebFS
 
 	undo, err := maxprocs.Set()
 	defer undo()

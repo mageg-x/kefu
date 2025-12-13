@@ -42,7 +42,7 @@ func (s *KefuServer) Start() {
 
 	s.r.GetGinRoute().Use(gzip.Gzip(gzip.DefaultCompression))
 
-	st, _ := fs.Sub(version.KefuFS, "demo/chatdemo/dist")
+	st, _ := fs.Sub(version.KefuWebFS, "demo/chatdemo/dist")
 	s.r.GetGinRoute().NoRoute(func(c *gin.Context) {
 
 		if c.Request.URL.Path == "" || c.Request.URL.Path == "/" {
