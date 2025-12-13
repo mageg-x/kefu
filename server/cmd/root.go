@@ -1,3 +1,5 @@
+//go:build linux || freebsd || dragonfly || netbsd || openbsd || darwin
+
 package cmd
 
 import (
@@ -66,7 +68,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&daemon, "daemon", "d", false, "run in daemon mode")
 	rootCmd.PersistentFlags().StringVar(&pingback, "pingback", "", "pingback address")
 	rootCmd.PersistentFlags().BoolVarP(&noStdout, "noStdout", "", false, "no stdout")
-
 }
 
 func initConfig() {

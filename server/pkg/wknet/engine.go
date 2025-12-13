@@ -1,3 +1,5 @@
+//go:build linux || freebsd || dragonfly || netbsd || openbsd || darwin
+
 package wknet
 
 import (

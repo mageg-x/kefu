@@ -1,3 +1,5 @@
+//go:build linux || freebsd || openbsd || darwin || solaris || wasm || rumprun
+
 package api
 
 import (
