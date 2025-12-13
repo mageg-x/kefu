@@ -23,14 +23,14 @@ type connz struct {
 	s *Server
 }
 
-func newConnz(s *Server) *connz {
+func NewConnz(s *Server) *connz {
 	return &connz{
 		Log: wklog.NewWKLog("ConnzAPI"),
 		s:   s,
 	}
 }
 
-func (co *connz) route(r *wkhttp.WKHttp) {
+func (co *connz) Route(r *wkhttp.WKHttp) {
 	r.GET("/connz", co.HandleConnz)
 }
 

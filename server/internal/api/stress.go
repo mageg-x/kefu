@@ -25,7 +25,7 @@ type stress struct {
 	wklog.Log
 }
 
-func newStress(s *Server) *stress {
+func NewStress(s *Server) *stress {
 	return &stress{
 		s:   s,
 		Log: wklog.NewWKLog("stress"),
@@ -33,7 +33,7 @@ func newStress(s *Server) *stress {
 }
 
 // Route route
-func (s *stress) route(r *wkhttp.WKHttp) {
+func (s *stress) Route(r *wkhttp.WKHttp) {
 	r.POST("/stress/add", s.add)            // 添加测试机器
 	r.POST("/stress/remove", s.remove)      //移除测试机
 	r.POST("/stress/start", s.start)        // 开始压测机

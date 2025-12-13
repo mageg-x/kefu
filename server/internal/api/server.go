@@ -15,10 +15,9 @@ type Server struct {
 	client      *ingress.Client
 	timingWheel *timingwheel.TimingWheel // Time wheel delay task
 	wklog.Log
-	uptime        time.Time
-	migrateTask   *MigrateTask   // 迁移任务
-	apiServer     *apiServer     // api服务
-	managerServer *managerServer // api服务（管理）
+	uptime      time.Time
+	migrateTask *MigrateTask // 迁移任务
+	apiServer   *apiServer   // api服务
 }
 
 func New() *Server {
@@ -31,7 +30,6 @@ func New() *Server {
 	s.requset = newRequset(s)
 	s.apiServer = newApiServer(s)
 	s.migrateTask = NewMigrateTask(s) // 迁移任务
-	s.managerServer = newManagerServer(s)
 	return s
 }
 
@@ -39,10 +37,6 @@ func (s *Server) Start() error {
 
 	s.timingWheel.Start()
 	s.apiServer.start()
-
-	if options.G.Manager.On {
-		s.managerServer.start()
-	}
 
 	// 判断是否开启迁移任务
 	if strings.TrimSpace(options.G.OldV1Api) != "" {
@@ -55,9 +49,6 @@ func (s *Server) Start() error {
 func (s *Server) Stop() {
 	s.timingWheel.Stop()
 	s.apiServer.stop()
-	if options.G.Manager.On {
-		s.managerServer.stop()
-	}
 }
 
 // Schedule 延迟任务

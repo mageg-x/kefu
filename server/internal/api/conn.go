@@ -19,7 +19,7 @@ type connApi struct {
 	s *Server
 }
 
-func newConnApi(s *Server) *connApi {
+func NewConnApi(s *Server) *connApi {
 	return &connApi{
 		Log: wklog.NewWKLog("connApi"),
 		s:   s,
@@ -27,7 +27,7 @@ func newConnApi(s *Server) *connApi {
 }
 
 // 路由配置
-func (cn *connApi) route(r *wkhttp.WKHttp) {
+func (cn *connApi) Route(r *wkhttp.WKHttp) {
 	// 移除连接
 	r.POST("/conn/remove", cn.remove)
 

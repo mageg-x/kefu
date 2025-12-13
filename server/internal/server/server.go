@@ -1,4 +1,4 @@
-﻿package server
+package server
 
 import (
 	"context"
@@ -58,7 +58,6 @@ type Server struct {
 	engine        *wknet.Engine // 长连接引擎
 	// userReactor    *userReactor    // 用户的reactor，用于处理用户的行为逻辑
 	trace       *trace.Trace // 监控
-	kefuServer  *KefuServer  // kefu server
 	datasource  IDatasource  // 数据源
 	apiServer   *api.Server  // api服务
 	ingress     *ingress.Ingress
@@ -149,8 +148,6 @@ func New(opts *options.Options) *Server {
 			trace.GlobalTrace.Metrics.System().ExtranetOutgoingAdd(int64(n))
 		}),
 	)
-
-	s.kefuServer = NewKefuServer(s) // kefu server
 
 	s.webhook = webhook.New()
 	service.Webhook = s.webhook
@@ -338,10 +335,6 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	if s.opts.Kefu.On {
-		s.kefuServer.Start()
-	}
-
 	if s.opts.Conversation.On {
 		err = s.conversationManager.Start()
 		if err != nil {
@@ -388,6 +381,10 @@ func (s *Server) StopNoErr() {
 	}
 }
 
+func (s *Server) ApiServer() *api.Server {
+	return s.apiServer
+}
+
 func (s *Server) Stop() error {
 
 	s.cancel()
@@ -417,10 +414,6 @@ func (s *Server) Stop() error {
 	}
 
 	s.clusterServer.Stop()
-
-	if s.opts.Kefu.On {
-		s.kefuServer.Stop()
-	}
 
 	err := s.engine.Stop()
 	if err != nil {

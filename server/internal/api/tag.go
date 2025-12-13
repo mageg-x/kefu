@@ -21,15 +21,15 @@ type tag struct {
 	s *Server
 }
 
-// newTag tag相关api
-func newTag(s *Server) *tag {
+// NewTag tag相关api
+func NewTag(s *Server) *tag {
 	return &tag{
 		s:   s,
 		Log: wklog.NewWKLog("tag"),
 	}
 }
 
-func (t *tag) route(r *wkhttp.WKHttp) {
+func (t *tag) Route(r *wkhttp.WKHttp) {
 
 	r.GET("/tag", t.get)            // 获取tag
 	r.POST("/tag/remove", t.remove) // 删除tag

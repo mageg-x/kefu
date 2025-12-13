@@ -19,15 +19,15 @@ type manager struct {
 	wklog.Log
 }
 
-func newManager(s *Server) *manager {
+func NewManager(s *Server) *manager {
 	return &manager{
 		s:   s,
 		Log: wklog.NewWKLog("manager"),
 	}
 }
 
-// route route
-func (m *manager) route(r *wkhttp.WKHttp) {
+// Route route
+func (m *manager) Route(r *wkhttp.WKHttp) {
 
 	r.POST("/manager/login", m.login) // 登录
 

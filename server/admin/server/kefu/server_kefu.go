@@ -1,11 +1,14 @@
-package server
+package kefu
 
 import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"strconv"
 	"strings"
 
+	"github.com/WuKongIM/WuKongIM/internal/options"
+	"github.com/WuKongIM/WuKongIM/internal/server"
 	"github.com/WuKongIM/WuKongIM/pkg/wkhttp"
 	"github.com/WuKongIM/WuKongIM/pkg/wklog"
 	"github.com/WuKongIM/WuKongIM/version"
@@ -17,12 +20,12 @@ import (
 type KefuServer struct {
 	r    *wkhttp.WKHttp
 	addr string
-	s    *Server
+	s    *server.Server
 	wklog.Log
 }
 
-// NewKefuServer new一个demo server
-func NewKefuServer(s *Server) *KefuServer {
+// NewKefuServer new一个kefu server
+func NewKefuServer(s *server.Server) *KefuServer {
 	// r := wkhttp.New()
 	log := wklog.NewWKLog("KefuServer")
 	r := wkhttp.NewWithLogger(wkhttp.LoggerWithWklog(log))
@@ -30,7 +33,7 @@ func NewKefuServer(s *Server) *KefuServer {
 
 	ds := &KefuServer{
 		r:    r,
-		addr: s.opts.Kefu.Addr,
+		addr: options.G.Kefu.Addr,
 		s:    s,
 		Log:  log,
 	}
@@ -41,7 +44,7 @@ func NewKefuServer(s *Server) *KefuServer {
 func (s *KefuServer) Start() {
 	s.r.GetGinRoute().Use(gzip.Gzip(gzip.DefaultCompression))
 
-	st, _ := fs.Sub(version.KefuWebFS, "kefu-web/dist")
+	st, _ := fs.Sub(version.KefuWebFS, "admin/web/kefu/dist")
 	s.r.GetGinRoute().NoRoute(func(c *gin.Context) {
 		if strings.HasPrefix(c.Request.URL.Path, "/admin/kefu") {
 			c.FileFromFS("./", http.FS(st))
@@ -70,4 +73,13 @@ func (s *KefuServer) Stop() {
 
 func (s *KefuServer) setRoutes() {
 
+}
+
+func parseAddr(addr string) (string, int64) {
+	addrPairs := strings.Split(addr, ":")
+	if len(addrPairs) < 2 {
+		return "", 0
+	}
+	portInt64, _ := strconv.ParseInt(addrPairs[len(addrPairs)-1], 10, 64)
+	return addrPairs[0], portInt64
 }

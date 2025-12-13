@@ -1,4 +1,4 @@
-package api
+package im
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/WuKongIM/WuKongIM/internal/api"
 	"github.com/WuKongIM/WuKongIM/internal/options"
 	"github.com/WuKongIM/WuKongIM/internal/plugin"
 	"github.com/WuKongIM/WuKongIM/internal/service"
@@ -21,19 +22,19 @@ import (
 	"go.uber.org/zap"
 )
 
-type managerServer struct {
-	s *Server
+type ManagerServer struct {
+	s *api.Server
 	r *wkhttp.WKHttp
 	wklog.Log
 	addr string
 }
 
-func newManagerServer(s *Server) *managerServer {
+func NewManagerServer(s *api.Server) *ManagerServer {
 	// r := wkhttp.New()
 	log := wklog.NewWKLog("managerServer")
 	r := wkhttp.NewWithLogger(wkhttp.LoggerWithWklog(log))
 
-	return &managerServer{
+	return &ManagerServer{
 		addr: options.G.Manager.Addr,
 		s:    s,
 		r:    r,
@@ -41,7 +42,7 @@ func newManagerServer(s *Server) *managerServer {
 	}
 }
 
-func (m *managerServer) start() {
+func (m *ManagerServer) Start() {
 
 	m.r.Use(wkhttp.CORSMiddleware())
 	// jwt和token认证中间件
@@ -49,7 +50,7 @@ func (m *managerServer) start() {
 
 	m.r.GetGinRoute().Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPaths([]string{"/metrics"})))
 
-	st, _ := fs.Sub(version.ImWebFs, "im-web/dist")
+	st, _ := fs.Sub(version.ImWebFs, "admin/web/im/dist")
 	m.r.GetGinRoute().NoRoute(func(c *gin.Context) {
 		if strings.HasPrefix(c.Request.URL.Path, "/admin/im") {
 			c.FileFromFS("./", http.FS(st))
@@ -73,44 +74,39 @@ func (m *managerServer) start() {
 	m.Info(fmt.Sprintf("Manager web address： http://localhost:%d/admin/im", port))
 }
 
-func (m *managerServer) stop() {
+func (m *ManagerServer) Stop() {
 
 }
 
-func (m *managerServer) setRoutes() {
-
+func (m *ManagerServer) setRoutes() {
 	// 监控收集
 	metricHandler := trace.GlobalTrace.Handler()
 	m.r.GET("/metrics", func(c *wkhttp.Context) {
 		metricHandler.ServeHTTP(c.Writer, c.Request)
 	})
 
-	connz := newConnz(m.s)
-	connz.route(m.r)
+	connz := api.NewConnz(m.s)
+	connz.Route(m.r)
 
-	varz := newVarz(m.s)
-	varz.route(m.r)
+	varz := api.NewVarz(m.s)
+	varz.Route(m.r)
 
-	conn := newConnApi(m.s)
-	conn.route(m.r)
+	conn := api.NewConnApi(m.s)
+	conn.Route(m.r)
 
 	// 管理者api
-	manager := newManager(m.s)
-	manager.route(m.r)
+	manager := api.NewManager(m.s)
+	manager.Route(m.r)
 
 	// 压测api
 	if options.G.Stress {
-		stress := newStress(m.s)
-		stress.route(m.r)
+		stress := api.NewStress(m.s)
+		stress.Route(m.r)
 	}
 
 	// 标签api
-	tag := newTag(m.s)
-	tag.route(m.r)
-
-	// // 系统api
-	// system := NewSystemAPI(s.s)
-	// system.Route(s.r)
+	tag := api.NewTag(m.s)
+	tag.Route(m.r)
 
 	// 分布式api
 	clusterServer, ok := service.Cluster.(*cluster.Server)
@@ -126,18 +122,15 @@ func (m *managerServer) setRoutes() {
 
 }
 
-func (m *managerServer) jwtAndTokenAuthMiddleware() wkhttp.HandlerFunc {
+func (m *ManagerServer) jwtAndTokenAuthMiddleware() wkhttp.HandlerFunc {
 	return func(c *wkhttp.Context) {
-
 		fpath := c.Request.URL.Path
-		if strings.HasPrefix(fpath, "/manager/login") { // 登录不需要认证
-			c.Next()
-			return
-		}
+
 		if strings.HasPrefix(fpath, "/admin/im") {
 			c.Next()
 			return
 		}
+
 		if strings.HasPrefix(fpath, "/metrics") {
 			c.Next()
 			return

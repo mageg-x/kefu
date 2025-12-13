@@ -105,17 +105,17 @@ func (s *apiServer) setRoutes() {
 	rt := newRoute(s.s)
 	rt.route(s.r)
 	// connz
-	connz := newConnz(s.s)
-	connz.route(s.r)
+	connz := NewConnz(s.s)
+	connz.Route(s.r)
 	// varz
-	varz := newVarz(s.s)
-	varz.route(s.r)
+	varz := NewVarz(s.s)
+	varz.Route(s.r)
 	// user
 	user := newUser(s.s)
 	user.route(s.r)
 	// conn
-	conn := newConnApi(s.s)
-	conn.route(s.r)
+	conn := NewConnApi(s.s)
+	conn.Route(s.r)
 	// channel
 	ch := newChannel(s.s)
 	ch.route(s.r)
@@ -126,12 +126,12 @@ func (s *apiServer) setRoutes() {
 	conves := newConversation(s.s)
 	conves.route(s.r)
 	// manager
-	mg := newManager(s.s)
-	mg.route(s.r)
+	mg := NewManager(s.s)
+	mg.Route(s.r)
 	// stress
 	if options.G.Stress {
-		st := newStress(s.s)
-		st.route(s.r)
+		st := NewStress(s.s)
+		st.Route(s.r)
 	}
 	// stream
 	stream := newStream(s.s)
@@ -142,8 +142,8 @@ func (s *apiServer) setRoutes() {
 	event.route(s.r)
 
 	// tag
-	tag := newTag(s.s)
-	tag.route(s.r)
+	tag := NewTag(s.s)
+	tag.Route(s.r)
 
 	// docs - API documentation with Swagger UI
 	docs := newDocs(s.s)
@@ -158,11 +158,6 @@ func (s *apiServer) setRoutes() {
 	// plugin
 	pluginServer := service.PluginManager.(*plugin.Server)
 	pluginServer.SetRoute(s.r)
-
-	// // 系统api
-	// system := NewSystemAPI(s.s)
-	// system.Route(s.r)
-
 }
 
 func (s *apiServer) jwtAndTokenAuthSetMiddleware() wkhttp.HandlerFunc {

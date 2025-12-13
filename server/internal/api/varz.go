@@ -24,7 +24,7 @@ type varz struct {
 	s *Server
 }
 
-func newVarz(s *Server) *varz {
+func NewVarz(s *Server) *varz {
 
 	return &varz{
 		s:   s,
@@ -32,7 +32,7 @@ func newVarz(s *Server) *varz {
 	}
 }
 
-func (v *varz) route(r *wkhttp.WKHttp) {
+func (v *varz) Route(r *wkhttp.WKHttp) {
 	r.GET("/varz", v.HandleVarz) // 获取系统变量
 
 	r.GET("/varz/setting", v.Settings) // 获取系统设置

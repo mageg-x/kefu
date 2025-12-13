@@ -18,6 +18,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/WuKongIM/WuKongIM/admin/server/im"
+	"github.com/WuKongIM/WuKongIM/admin/server/kefu"
 	"github.com/WuKongIM/WuKongIM/internal/options"
 	"github.com/WuKongIM/WuKongIM/internal/server"
 	"github.com/WuKongIM/WuKongIM/pkg/wklog"
@@ -122,13 +124,43 @@ func cmdRun() error {
 		// 等待集群准备好
 		s.MustWaitAllSlotsReady(time.Minute)
 
+		// 启动管理服务器
+		var managerServer *im.ManagerServer
+		if options.G.Manager.On {
+			managerServer = im.NewManagerServer(s.ApiServer())
+			managerServer.Start()
+			// ManagerServer.Start() doesn't return an error, but we can still check for any panics
+			// The server will run in the background due to the goroutine in Start()
+		}
+
+		// 启动客服服务器
+		var kefuServer *kefu.KefuServer
+		if options.G.Kefu.On {
+			kefuServer = kefu.NewKefuServer(s)
+			kefuServer.Start()
+			// KefuServer.Start() doesn't return an error, but we can still check for any panics
+			// The server will run in the background due to the goroutine in Start()
+		}
+
 		// 处理 pingback (如果提供了)
 		if pingback != "" {
 			if err := handlePingback(); err != nil {
+				if kefuServer != nil {
+					kefuServer.Stop()
+				}
+				if managerServer != nil {
+					managerServer.Stop()
+				}
 				s.Stop() // 如果 pingback 失败，也尝试停止服务器
 				return err
 			}
 			if err := writePIDFile(); err != nil {
+				if kefuServer != nil {
+					kefuServer.Stop()
+				}
+				if managerServer != nil {
+					managerServer.Stop()
+				}
 				s.Stop() // 如果写 PID 文件失败，也尝试停止服务器
 				return err
 			}
@@ -141,6 +173,16 @@ func cmdRun() error {
 
 		// 阻塞直到收到退出信号
 		<-quit
+
+		// 停止客服服务器
+		if kefuServer != nil {
+			kefuServer.Stop()
+		}
+
+		// 停止管理服务器
+		if managerServer != nil {
+			managerServer.Stop()
+		}
 
 		s.Stop() // <-- 调用 Stop() 进行清理
 		wklog.Info("WuKongIM server stopped.")

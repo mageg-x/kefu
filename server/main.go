@@ -10,10 +10,10 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:embed im-web/dist
+//go:embed admin/web/im/dist
 var imWebFS embed.FS
 
-//go:embed kefu-web/dist
+//go:embed admin/web/kefu/dist
 var kefuWebFS embed.FS
 
 // go ldflags
