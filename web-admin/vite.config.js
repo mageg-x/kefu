@@ -19,4 +19,10 @@ export default defineConfig({
     ],
     extensions: ['.vue', '.js', '.json']
   },
+  base: '/admin/kefu',
+  server: {
+    fs: {
+      strict: false
+    }
+  }  
 })

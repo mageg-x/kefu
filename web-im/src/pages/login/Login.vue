@@ -26,7 +26,7 @@ const onLogin = () => {
         loginInfo.token = res.token
         loginInfo.setPermissionFromStr(res.permissions)
         loginInfo.save()
-        window.location.href = '/web'
+        window.location.href = '/admin/im'
     }).catch((err) => {
         console.log(err)
         alert(err.msg)

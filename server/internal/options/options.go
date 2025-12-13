@@ -95,8 +95,8 @@ type Options struct {
 		On   bool   // 是否开启监控
 		Addr string // 监控地址 默认为 0.0.0.0:5300
 	}
-	// demo
-	Demo struct {
+	// kefu
+	Kefu struct {
 		On   bool   // 是否开启demo
 		Addr string // demo服务地址 默认为 0.0.0.0:5172
 	}
@@ -550,7 +550,7 @@ func New(op ...Option) *Options {
 			On:   true,
 			Addr: "0.0.0.0:5300",
 		},
-		Demo: struct {
+		Kefu: struct {
 			On   bool
 			Addr string
 		}{
@@ -810,8 +810,8 @@ func (o *Options) ConfigureWithViper(vp *viper.Viper) {
 	o.Manager.On = o.getBool("manager.on", o.Manager.On)
 	o.Manager.Addr = o.getString("manager.addr", o.Manager.Addr)
 
-	o.Demo.On = o.getBool("demo.on", o.Demo.On)
-	o.Demo.Addr = o.getString("demo.addr", o.Demo.Addr)
+	o.Kefu.On = o.getBool("kefu.on", o.Kefu.On)
+	o.Kefu.Addr = o.getString("kefu.addr", o.Kefu.Addr)
 
 	o.WSAddr = o.getString("wsAddr", o.WSAddr)
 	o.WSSAddr = o.getString("wssAddr", o.WSSAddr)
@@ -1614,13 +1614,13 @@ func WithManagerAddr(addr string) Option {
 
 func WithDemoOn(on bool) Option {
 	return func(opts *Options) {
-		opts.Demo.On = on
+		opts.Kefu.On = on
 	}
 }
 
 func WithDemoAddr(addr string) Option {
 	return func(opts *Options) {
-		opts.Demo.Addr = addr
+		opts.Kefu.Addr = addr
 	}
 }
 

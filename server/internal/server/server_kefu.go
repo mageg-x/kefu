@@ -30,7 +30,7 @@ func NewKefuServer(s *Server) *KefuServer {
 
 	ds := &KefuServer{
 		r:    r,
-		addr: s.opts.Demo.Addr,
+		addr: s.opts.Kefu.Addr,
 		s:    s,
 		Log:  log,
 	}
@@ -39,25 +39,17 @@ func NewKefuServer(s *Server) *KefuServer {
 
 // Start 开始
 func (s *KefuServer) Start() {
-
 	s.r.GetGinRoute().Use(gzip.Gzip(gzip.DefaultCompression))
 
-	st, _ := fs.Sub(version.KefuWebFS, "demo/chatdemo/dist")
+	st, _ := fs.Sub(version.KefuWebFS, "kefu-web/dist")
 	s.r.GetGinRoute().NoRoute(func(c *gin.Context) {
-
-		if c.Request.URL.Path == "" || c.Request.URL.Path == "/" {
-			c.Redirect(http.StatusFound, fmt.Sprintf("/chatdemo?apiurl=%s", s.s.opts.External.APIUrl))
-			c.Abort()
-			return
-		}
-
-		if strings.HasPrefix(c.Request.URL.Path, "/chatdemo") {
+		if strings.HasPrefix(c.Request.URL.Path, "/admin/kefu") {
 			c.FileFromFS("./", http.FS(st))
 			return
 		}
 	})
 
-	s.r.GetGinRoute().StaticFS("/chatdemo", http.FS(st))
+	s.r.GetGinRoute().StaticFS("/admin/kefu", http.FS(st))
 
 	s.setRoutes()
 	go func() {
@@ -66,10 +58,10 @@ func (s *KefuServer) Start() {
 			panic(err)
 		}
 	}()
-	s.Info("Demo server started", zap.String("addr", s.addr))
+	s.Info("Kefu server started", zap.String("addr", s.addr))
 
 	_, port := parseAddr(s.addr)
-	s.Info(fmt.Sprintf("Chat demo address： http://localhost:%d/chatdemo", port))
+	s.Info(fmt.Sprintf("Kefu web address： http://localhost:%d/admin/kefu", port))
 }
 
 // Stop 停止服务

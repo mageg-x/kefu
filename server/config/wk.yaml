@@ -29,7 +29,7 @@ external: # 公网配置
 #manager: 
 #  on: true # 是否开启管理后台
 #  addr: "0.0.0.0:5300" # 管理后台监听地址 默认为 0.0.0.0:5300
-demo: 
+kefu: 
  on: true # 是否开启demo
  addr: "0.0.0.0:5172" # demo监听地址 默认为 0.0.0.0:5172
 #channel:

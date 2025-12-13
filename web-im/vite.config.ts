@@ -13,7 +13,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: '/web',
+  base: '/admin/im',
   server: {
     fs: {
       strict: false

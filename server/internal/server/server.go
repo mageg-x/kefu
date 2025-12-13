@@ -58,7 +58,7 @@ type Server struct {
 	engine        *wknet.Engine // 长连接引擎
 	// userReactor    *userReactor    // 用户的reactor，用于处理用户的行为逻辑
 	trace       *trace.Trace // 监控
-	kefuServer  *KefuServer  // demo server
+	kefuServer  *KefuServer  // kefu server
 	datasource  IDatasource  // 数据源
 	apiServer   *api.Server  // api服务
 	ingress     *ingress.Ingress
@@ -150,7 +150,7 @@ func New(opts *options.Options) *Server {
 		}),
 	)
 
-	s.kefuServer = NewKefuServer(s) // demo server
+	s.kefuServer = NewKefuServer(s) // kefu server
 
 	s.webhook = webhook.New()
 	service.Webhook = s.webhook
@@ -338,7 +338,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	if s.opts.Demo.On {
+	if s.opts.Kefu.On {
 		s.kefuServer.Start()
 	}
 
@@ -418,7 +418,7 @@ func (s *Server) Stop() error {
 
 	s.clusterServer.Stop()
 
-	if s.opts.Demo.On {
+	if s.opts.Kefu.On {
 		s.kefuServer.Stop()
 	}
 
@@ -542,10 +542,10 @@ func (s *Server) printEnhancedBanner() {
 		fmt.Printf("   ├─ Manager: %s\n", s.opts.Manager.Addr)
 	}
 
-	if s.opts.Demo.On {
-		fmt.Printf("   └─ 🎮 Demo: http://%s\n", s.opts.Demo.Addr)
+	if s.opts.Kefu.On {
+		fmt.Printf("   └─ 🎮 Kefu: http://%s\n", s.opts.Kefu.Addr)
 	} else {
-		fmt.Printf("   └─ Demo: disabled\n")
+		fmt.Printf("   └─ Kefu: disabled\n")
 	}
 
 	fmt.Println()
@@ -568,8 +568,8 @@ func (s *Server) printEnhancedBanner() {
 	if s.opts.Mode != options.ReleaseMode {
 		fmt.Printf("   ├─ API Docs: http://%s/docs\n", s.opts.HTTPAddr)
 	}
-	if s.opts.Demo.On {
-		fmt.Printf("   ├─ Chat Demo: http://%s\n", s.opts.Demo.Addr)
+	if s.opts.Kefu.On {
+		fmt.Printf("   ├─ Chat Kefu: http://%s\n", s.opts.Kefu.Addr)
 	}
 	fmt.Printf("   └─ System Info: http://%s/varz\n", s.opts.HTTPAddr)
 

@@ -134,7 +134,7 @@ func (m *managerServer) jwtAndTokenAuthMiddleware() wkhttp.HandlerFunc {
 			c.Next()
 			return
 		}
-		if strings.HasPrefix(fpath, "/web") {
+		if strings.HasPrefix(fpath, "/admin/im") {
 			c.Next()
 			return
 		}

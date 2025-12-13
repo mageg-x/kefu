@@ -18,7 +18,7 @@ onMounted(() => {
 
   APIClient.shared.logoutCallback = () => {
     App.shard().loginInfo.clear();
-    window.location.href = '/web/login'
+    window.location.href = '/admin/im/login'
   }
 
 });
@@ -27,7 +27,7 @@ const onLogout = () => {
   console.log('logout')
   App.shard().loginInfo.clear();
 
-  window.location.href = '/web/login'
+  window.location.href = '/admin/im'
 }
 
 </script>
