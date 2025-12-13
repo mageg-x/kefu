@@ -40,3 +40,40 @@ window.KefuChat = {
     }
   }
 };
+
+// 自动初始化功能 - 监听DOM加载完成后检查data-kefu-appid属性
+function autoInit() {
+  // 查找当前脚本标签（即kefu.min.js）
+  const scriptTags = document.querySelectorAll('script');
+  let kefuScript = null;
+  
+  for (const script of scriptTags) {
+    // 检查是否有data-kefu-appid属性
+    if (script.hasAttribute('data-kefu-appid')) {
+      kefuScript = script;
+      break;
+    }
+    
+    // 或者检查src是否包含kefu.min.js
+    const src = script.getAttribute('src');
+    if (src && src.includes('kefu.min.js')) {
+      kefuScript = script;
+      break;
+    }
+  }
+  
+  if (kefuScript && kefuScript.hasAttribute('data-kefu-appid')) {
+    const appId = kefuScript.getAttribute('data-kefu-appid');
+    if (appId) {
+      window.KefuChat.init({ appId });
+    }
+  }
+}
+
+// 在DOM加载完成后执行自动初始化
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', autoInit);
+} else {
+  // DOM已经加载完成，直接执行
+  autoInit();
+}

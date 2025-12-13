@@ -1,5 +1,6 @@
 <template>
-  <div class="chat-window w-80 h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
+  <div
+    class="chat-window w-80 h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
     <!-- 顶部标题栏 -->
     <div class="chat-header bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -58,17 +59,16 @@
             <span class="text-xs text-gray-500">{{ msg.sender }}</span>
             <div class="bg-white px-4 py-1.5 rounded-lg rounded-tl-none shadow-sm border border-gray-100 max-w-xs">
               <div v-if="hasImages(msg.content)" class="space-y-2">
-                <img
-                  v-for="(src, index) in extractImages(msg.content)"
-                  :key="'img-' + msg.id + '-' + index"
-                  :src="src"
+                <img v-for="(src, index) in extractImages(msg.content)" :key="'img-' + msg.id + '-' + index" :src="src"
                   :alt="'图片' + index"
-                  class="max-w-[200px] max-h-[200px] rounded cursor-pointer hover:opacity-90 transition-opacity"
-                />
+                  class="max-w-[200px] max-h-[200px] rounded cursor-pointer hover:opacity-90 transition-opacity" />
               </div>
               <div v-else-if="hasVoice(msg.content)" class="flex items-center gap-2 text-sm">
-                <svg t="1765465928183" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                  <path d="M487.648 240a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v546.784a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V240z m155.84 89.04a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04z m155.824 144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v123.824a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16v-123.84z m-467.488-144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04zM176 473.76a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v112.688a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V473.76z" fill="currentColor" />
+                <svg t="1765465928183" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                  <path
+                    d="M487.648 240a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v546.784a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V240z m155.84 89.04a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04z m155.824 144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v123.824a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16v-123.84z m-467.488-144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04zM176 473.76a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v112.688a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V473.76z"
+                    fill="currentColor" />
                 </svg>
                 {{ t('voiceMessage') }}
                 <span class="text-xs text-gray-500">{{ formatDuration(msg.duration) }}</span>
@@ -80,24 +80,22 @@
 
         <!-- 用户消息 -->
         <div v-else-if="msg.type === 'user'" class="flex justify-end gap-3">
-          <div class="flex flex-col max-w-3xs max-h-52 overflow-auto no-scrollbar gap-2 items-end">
-            <div class="bg-blue-100 text-black px-4 py-1.5 rounded-lg rounded-tr-none shadow-sm max-w-full">
+          <div class="flex flex-col max-w-3xs rounded-tl-lg rounded-tr-none rounded-br-lg rounded-bl-lg max-h-52 overflow-auto no-scrollbar gap-2 items-end">
+            <div
+              class="bg-blue-100 text-black px-4 py-1.5  shadow-sm max-w-full">
               <div v-if="hasImages(msg.content)" class="space-y-2">
-                <img
-                  v-for="(src, index) in extractImages(msg.content)"
-                  :key="'img-' + msg.id + '-' + index"
-                  :src="src"
+                <img v-for="(src, index) in extractImages(msg.content)" :key="'img-' + msg.id + '-' + index" :src="src"
                   :alt="'图片' + index"
-                  class="max-w-[100px] max-h-[100px] rounded cursor-pointer hover:opacity-90 transition-opacity"
-                />
+                  class="max-w-[100px] max-h-[100px] rounded cursor-pointer hover:opacity-90 transition-opacity" />
               </div>
               <div v-else-if="hasVoice(msg.content)" class="flex items-center gap-2 text-sm">
-                <button @click="togglePlayAudio(msg)" class="flex items-center justify-center text-blue-600 hover:text-blue-800">
-                  <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <button @click="togglePlayAudio(msg)"
+                  class="flex items-center justify-center text-blue-600 hover:text-blue-800">
+                  <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                     <path
                       :d="msg.isPlaying ? 'M512 80c-238.656 0-432 193.344-432 432s193.344 432 432 432 432-193.344 432-432S750.656 80 512 80zM576 680c0 17.664-14.336 32-32 32H400c-17.664 0-32-14.336-32-32V344c0-17.664 14.336-32 32-32h144c17.664 0 32 14.336 32 32v336z' : 'M374.464 240.96l459.824 272.96a40 40 0 0 1 0 70.08L374.464 783.04a40 40 0 0 1-60.544-35.04V276c0-24.32 20.48-40.96 40.32-35.04zM352 400.96a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v224a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16v-224z'"
-                      fill="currentColor"
-                    />
+                      fill="currentColor" />
                   </svg>
                 </button>
                 <span>{{ t('voiceMessage') }}</span>
@@ -107,7 +105,8 @@
               <div v-else class="text-sm break-all" v-html="renderMarkdown(msg.content)"></div>
             </div>
           </div>
-          <img :src="`/src/assets/avatars/head${avatarNumber}.svg`" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="用户头像" />
+          <img :src="`/src/assets/avatars/head${avatarNumber}.svg`"
+            class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="用户头像" />
         </div>
       </div>
     </div>
@@ -115,9 +114,15 @@
     <!-- 快捷回复 -->
     <div class="quick-replies px-2 py-1 bg-gray-50 border-y border-gray-200">
       <div class="flex gap-1 overflow-x-auto">
-        <button class="px-4 py-1.5 bg-blue-50 text-xs text-blue-700 rounded-full shadow-sm hover:bg-blue-100 transition whitespace-nowrap border border-blue-200">{{ t('featureIntro') }}</button>
-        <button class="px-4 py-1.5 bg-green-50 text-xs text-green-700 rounded-full shadow-sm hover:bg-green-100 transition whitespace-nowrap border border-green-200">{{ t('humanService') }}</button>
-        <button class="px-4 py-1.5 bg-purple-50 text-xs text-purple-700 rounded-full shadow-sm hover:bg-purple-100 transition whitespace-nowrap border border-purple-200">{{ t('aiService') }}</button>
+        <button
+          class="px-4 py-1.5 bg-blue-50 text-xs text-blue-700 rounded-full shadow-sm hover:bg-blue-100 transition whitespace-nowrap border border-blue-200">{{
+            t('featureIntro') }}</button>
+        <button
+          class="px-4 py-1.5 bg-green-50 text-xs text-green-700 rounded-full shadow-sm hover:bg-green-100 transition whitespace-nowrap border border-green-200">{{
+            t('humanService') }}</button>
+        <button
+          class="px-4 py-1.5 bg-purple-50 text-xs text-purple-700 rounded-full shadow-sm hover:bg-purple-100 transition whitespace-nowrap border border-purple-200">{{
+            t('aiService') }}</button>
       </div>
     </div>
 
@@ -126,33 +131,39 @@
       <div class="flex flex-col py-1">
         <!-- 功能按钮 -->
         <div class="flex items-center gap-2 pb-1 pl-2 relative">
-          <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 emoji-button" @click="toggleEmojiPicker" :title="t('emojiButton')">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9h.01M8.99 9H9m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.81 0H6.6Z" />
+          <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 emoji-button"
+            @click="toggleEmojiPicker" :title="t('emojiButton')">
+            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 9h.01M8.99 9H9m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.81 0H6.6Z" />
             </svg>
           </button>
 
-          <div v-if="showEmojiPicker" class="emoji-picker absolute bottom-full left-0 mb-2 bg-white border rounded-lg shadow-lg p-2 z-10 w-64 h-48 overflow-y-auto">
+          <div v-if="showEmojiPicker"
+            class="emoji-picker absolute bottom-full left-0 mb-2 bg-white border rounded-lg shadow-lg p-2 z-10 w-64 h-48 overflow-y-auto">
             <div class="grid grid-cols-8 gap-1">
-              <button v-for="emoji in emojis" :key="emoji" class="text-xl hover:bg-gray-100 rounded p-1" @click="selectEmoji(emoji)">
+              <button v-for="emoji in emojis" :key="emoji" class="text-xl hover:bg-gray-100 rounded p-1"
+                @click="selectEmoji(emoji)">
                 {{ emoji }}
               </button>
             </div>
           </div>
 
-          <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100" @click="selectImage" :title="t('imageButton')">
+          <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100"
+            @click="selectImage" :title="t('imageButton')">
             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-              <path fill-rule="evenodd" d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z" clip-rule="evenodd" />
-              <path fill-rule="evenodd" d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z" clip-rule="evenodd" />
+              <path fill-rule="evenodd" d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z"
+                clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z"
+                clip-rule="evenodd" />
             </svg>
           </button>
 
-          <button
-            class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 relative"
-            :class="{ 'text-red-500': recording }"
-            @click="toggleVoiceRecording"
-            :title="recording ? t('releaseToStop') : t('holdToRecord')"
-          >
+          <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 relative"
+            :class="{ 'text-red-500': recording }" @click="toggleVoiceRecording"
+            :title="recording ? t('releaseToStop') : t('holdToRecord')">
             <!-- 录音时显示横波动画，否则显示默认图标 -->
             <template v-if="recording">
               <div class="wave-animation">
@@ -164,35 +175,34 @@
               </div>
             </template>
             <template v-else>
-              <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <path d="M512 705.728c105.888 0 192-86.112 192-192L704 257.952c0-105.888-86.112-192-192-192s-192 86.112-192 192l0 255.776C320 619.584 406.112 705.728 512 705.728z" />
-                <path d="M864 479.776 864 352c0-17.664-14.304-32-32-32s-32 14.336-32 32l0 127.776c0 160.16-129.184 290.464-288 290.464-158.784 0-288-130.304-288-290.464L224 352c0-17.664-14.336-32-32-32s-32 14.336-32 32l0 127.776c0 184.608 140.864 336.48 320 352.832L480 896 288 896c-17.664 0-32 14.304-32 32s14.336 32 32 32l448 0c17.696 0 32-14.304 32-32s-14.304-32-32-32l-192 0 0-63.36C723.136 816.256 864 664.384 864 479.776z" />
+              <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path
+                  d="M512 705.728c105.888 0 192-86.112 192-192L704 257.952c0-105.888-86.112-192-192-192s-192 86.112-192 192l0 255.776C320 619.584 406.112 705.728 512 705.728z" />
+                <path
+                  d="M864 479.776 864 352c0-17.664-14.304-32-32-32s-32 14.336-32 32l0 127.776c0 160.16-129.184 290.464-288 290.464-158.784 0-288-130.304-288-290.464L224 352c0-17.664-14.336-32-32-32s-32 14.336-32 32l0 127.776c0 184.608 140.864 336.48 320 352.832L480 896 288 896c-17.664 0-32 14.304-32 32s14.336 32 32 32l448 0c17.696 0 32-14.304 32-32s-14.304-32-32-32l-192 0 0-63.36C723.136 816.256 864 664.384 864 479.776z" />
               </svg>
             </template>
           </button>
 
-          <button 
+          <button
             class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 relative language-button"
-            @click="toggleLanguageMenu"
-            :title="t('languageButton')"
-          >
-            <svg t="1765451632654" class="w-6 h-6" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path d="M848.805886 805.572222c70.998007-81.260745 109.779266-184.217628 109.779266-293.14448 0-119.204939-46.421262-231.277434-130.713041-315.569212C744.876861 113.862257 634.94103 67.61598 517.788843 66.213028c-1.924839-0.599657-10.290367-0.592494-12.227486 0.01535C388.878868 67.945485 279.434224 114.159016 196.73471 196.85853 113.863281 279.730982 67.630307 389.460106 66.095347 506.415818c-0.428765 1.64957-0.436952 8.601912-0.021489 10.226922 1.082658 117.628024 47.364751 228.058113 130.660852 311.354214 84.291778 84.291778 196.36325 130.713041 315.569212 130.713041 119.204939 0 231.277434-46.421262 315.569212-130.713041 6.139837-6.139837 12.054547-12.444427 17.789155-18.871813 0.50756-0.453325 1.001817-0.928139 1.471514-1.440815C847.750857 807.012014 848.295256 806.299793 848.805886 805.572222zM107.447151 532.043499l187.501418 0c1.322112 65.678862 9.253758 127.264499 22.505573 182.112688-61.690014 16.687054-100.819197 38.371936-121.076566 51.906184C144.30971 701.336206 111.676475 620.35687 107.447151 532.043499zM195.881272 259.408121c20.090571 13.556761 59.242266 35.461653 121.340579 52.260248-12.998035 54.127781-20.827351 114.778116-22.243607 179.432649L107.525945 491.101018C112.076588 403.731134 144.437623 323.612399 195.881272 259.408121zM917.081898 491.099994 729.628576 491.099994c-1.415232-64.630996-9.240455-125.260865-22.229281-179.37432 61.95505-16.693194 101.235682-38.444591 121.56673-52.020794C880.270505 323.860039 912.537396 403.866211 917.081898 491.099994zM688.677908 491.099994 532.167319 491.099994 532.167319 335.061149c52.209082-1.094938 97.103572-6.453992 135.272893-14.033621C680.000272 373.163955 687.286212 430.896844 688.677908 491.099994zM532.167319 294.115598 532.167319 109.918435c36.84107 10.398838 72.779583 49.205679 100.926644 110.015649 8.810666 19.035542 16.645099 39.641859 23.464411 61.521169C621.531626 288.227494 580.261687 293.062616 532.167319 294.115598zM491.223814 110.273523l0 183.805236c-47.504944-1.12666-88.378863-6.001691-123.120109-12.802584 6.807033-21.812795 14.623046-42.35976 23.409153-61.344137C419.351903 159.792333 454.809463 121.175827 491.223814 110.273523zM491.223814 335.040682l0 156.059312L335.928912 491.099994c1.391696-60.213383 8.679683-117.955482 21.243837-170.099073C395.008472 328.536548 439.487499 333.887416 491.223814 335.040682zM335.893096 532.043499l155.330718 0 0 158.667719c-51.609425 1.194198-96.019891 6.563486-133.821845 14.103206C344.576873 651.927913 337.193719 593.243349 335.893096 532.043499zM491.223814 731.672118l0 182.909843c-36.415374-10.902304-71.871911-49.51881-99.709933-109.659539-8.679683-18.752086-16.409738-39.034015-23.157419-60.551074C402.9964 737.645157 443.773106 732.820268 491.223814 731.672118zM532.167319 914.937049 532.167319 731.608673c47.904033 1.025353 89.103364 5.862521 124.116809 12.656251-6.755868 21.555945-14.497179 41.87369-23.190165 60.656475C604.946902 865.73137 569.008388 904.538211 532.167319 914.937049zM532.167319 690.660052 532.167319 532.043499l156.546406 0c-1.298576 61.096497-8.66024 119.68487-21.445428 172.502819C629.154233 697.013761 584.319096 691.710988 532.167319 690.660052zM729.659275 532.043499l187.501418 0c-4.221138 88.138386-36.732599 168.973436-88.620363 233.635131-20.469194-13.668301-59.635215-35.298947-121.30374-51.868321C720.43724 659.049101 728.33921 597.585237 729.659275 532.043499zM801.518906 228.742704c-18.329461 11.570523-52.309366 29.355585-104.858186 43.493583-19.295462-63.056128-46.110177-115.004267-78.06189-150.97655C689.00025 140.410913 751.833297 178.097234 801.518906 228.742704zM406.007991 121.259738c-31.905664 35.920094-58.690704 87.768973-77.979002 150.702304-52.40351-14.241352-86.370113-32.099069-104.581893-43.587728C273.076422 177.914062 335.777463 140.364865 406.007991 121.259738zM223.917816 796.963147c18.284435-11.535731 52.098565-29.230742 104.332207-43.335994 19.271926 62.60485 45.976124 114.186645 77.757968 149.968593C335.99952 884.550994 273.472442 847.181899 223.917816 796.963147zM618.59883 903.595746c31.801287-35.803437 58.517765-87.426165 77.792761-150.08218 51.984978 14.023388 85.972047 31.631418 104.533798 43.208081C751.3329 847.061149 688.718841 884.521319 618.59883 903.595746z"  p-id="3102"/>
+            @click="toggleLanguageMenu" :title="t('languageButton')">
+            <svg t="1765451632654" class="w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
+              xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path
+                d="M848.805886 805.572222c70.998007-81.260745 109.779266-184.217628 109.779266-293.14448 0-119.204939-46.421262-231.277434-130.713041-315.569212C744.876861 113.862257 634.94103 67.61598 517.788843 66.213028c-1.924839-0.599657-10.290367-0.592494-12.227486 0.01535C388.878868 67.945485 279.434224 114.159016 196.73471 196.85853 113.863281 279.730982 67.630307 389.460106 66.095347 506.415818c-0.428765 1.64957-0.436952 8.601912-0.021489 10.226922 1.082658 117.628024 47.364751 228.058113 130.660852 311.354214 84.291778 84.291778 196.36325 130.713041 315.569212 130.713041 119.204939 0 231.277434-46.421262 315.569212-130.713041 6.139837-6.139837 12.054547-12.444427 17.789155-18.871813 0.50756-0.453325 1.001817-0.928139 1.471514-1.440815C847.750857 807.012014 848.295256 806.299793 848.805886 805.572222zM107.447151 532.043499l187.501418 0c1.322112 65.678862 9.253758 127.264499 22.505573 182.112688-61.690014 16.687054-100.819197 38.371936-121.076566 51.906184C144.30971 701.336206 111.676475 620.35687 107.447151 532.043499zM195.881272 259.408121c20.090571 13.556761 59.242266 35.461653 121.340579 52.260248-12.998035 54.127781-20.827351 114.778116-22.243607 179.432649L107.525945 491.101018C112.076588 403.731134 144.437623 323.612399 195.881272 259.408121zM917.081898 491.099994 729.628576 491.099994c-1.415232-64.630996-9.240455-125.260865-22.229281-179.37432 61.95505-16.693194 101.235682-38.444591 121.56673-52.020794C880.270505 323.860039 912.537396 403.866211 917.081898 491.099994zM688.677908 491.099994 532.167319 491.099994 532.167319 335.061149c52.209082-1.094938 97.103572-6.453992 135.272893-14.033621C680.000272 373.163955 687.286212 430.896844 688.677908 491.099994zM532.167319 294.115598 532.167319 109.918435c36.84107 10.398838 72.779583 49.205679 100.926644 110.015649 8.810666 19.035542 16.645099 39.641859 23.464411 61.521169C621.531626 288.227494 580.261687 293.062616 532.167319 294.115598zM491.223814 110.273523l0 183.805236c-47.504944-1.12666-88.378863-6.001691-123.120109-12.802584 6.807033-21.812795 14.623046-42.35976 23.409153-61.344137C419.351903 159.792333 454.809463 121.175827 491.223814 110.273523zM491.223814 335.040682l0 156.059312L335.928912 491.099994c1.391696-60.213383 8.679683-117.955482 21.243837-170.099073C395.008472 328.536548 439.487499 333.887416 491.223814 335.040682zM335.893096 532.043499l155.330718 0 0 158.667719c-51.609425 1.194198-96.019891 6.563486-133.821845 14.103206C344.576873 651.927913 337.193719 593.243349 335.893096 532.043499zM491.223814 731.672118l0 182.909843c-36.415374-10.902304-71.871911-49.51881-99.709933-109.659539-8.679683-18.752086-16.409738-39.034015-23.157419-60.551074C402.9964 737.645157 443.773106 732.820268 491.223814 731.672118zM532.167319 914.937049 532.167319 731.608673c47.904033 1.025353 89.103364 5.862521 124.116809 12.656251-6.755868 21.555945-14.497179 41.87369-23.190165 60.656475C604.946902 865.73137 569.008388 904.538211 532.167319 914.937049zM532.167319 690.660052 532.167319 532.043499l156.546406 0c-1.298576 61.096497-8.66024 119.68487-21.445428 172.502819C629.154233 697.013761 584.319096 691.710988 532.167319 690.660052zM729.659275 532.043499l187.501418 0c-4.221138 88.138386-36.732599 168.973436-88.620363 233.635131-20.469194-13.668301-59.635215-35.298947-121.30374-51.868321C720.43724 659.049101 728.33921 597.585237 729.659275 532.043499zM801.518906 228.742704c-18.329461 11.570523-52.309366 29.355585-104.858186 43.493583-19.295462-63.056128-46.110177-115.004267-78.06189-150.97655C689.00025 140.410913 751.833297 178.097234 801.518906 228.742704zM406.007991 121.259738c-31.905664 35.920094-58.690704 87.768973-77.979002 150.702304-52.40351-14.241352-86.370113-32.099069-104.581893-43.587728C273.076422 177.914062 335.777463 140.364865 406.007991 121.259738zM223.917816 796.963147c18.284435-11.535731 52.098565-29.230742 104.332207-43.335994 19.271926 62.60485 45.976124 114.186645 77.757968 149.968593C335.99952 884.550994 273.472442 847.181899 223.917816 796.963147zM618.59883 903.595746c31.801287-35.803437 58.517765-87.426165 77.792761-150.08218 51.984978 14.023388 85.972047 31.631418 104.533798 43.208081C751.3329 847.061149 688.718841 884.521319 618.59883 903.595746z"
+                p-id="3102" />
             </svg>
-            
+
             <!-- 语言选择菜单 -->
-            <div 
-              v-if="showLanguageMenu" 
+            <div v-if="showLanguageMenu"
               class="language-menu absolute bottom-full right-0 mb-2 bg-white border rounded-lg shadow-lg p-1 z-10 w-28"
-              @click.stop
-            >
-              <button 
-                v-for="lang in languages" 
-                :key="lang.value"
+              @click.stop>
+              <button v-for="lang in languages" :key="lang.value"
                 class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded transition-colors"
                 :class="{ 'bg-blue-100 text-blue-700': currentLanguage.value === lang.value }"
-                @click="changeLanguage(lang.value)"
-              >
+                @click="changeLanguage(lang.value)">
                 {{ lang.label }}
               </button>
             </div>
@@ -201,22 +211,13 @@
 
         <!-- 输入框 -->
         <div class="relative mx-2 w-[calc(100%-16px)]">
-          <div
-            ref="inputDiv"
-            contenteditable="true"
-            @input="handleInput"
-            @paste="handlePaste"
-            @keypress.enter.exact="sendMessage"
-            @keypress.enter.shift=""
-            placeholder="Please enter your message"
+          <div ref="inputDiv" contenteditable="true" @input="handleInput" @paste="handlePaste"
+            @keypress.enter.exact="sendMessage" @keypress.enter.shift="" placeholder="Please enter your message"
             class="w-full border border-gray-300 rounded-lg px-4 py-3 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[80px] max-h-[150px] overflow-y-auto"
-            style="white-space: pre-wrap; word-break: break-word;"
-          ></div>
-          <button
-            @click="sendMessage"
+            style="white-space: pre-wrap; word-break: break-word;"></div>
+          <button @click="sendMessage"
             class="absolute right-2 bottom-2 bg-blue-500 text-white px-2 py-1 mb-1 rounded-lg text-sm hover:bg-blue-600 transition shadow-sm disabled:bg-gray-300 disabled:cursor-not-allowed"
-            :disabled="!inputText.trim()"
-          >
+            :disabled="!inputText.trim()">
             {{ t('send') }}
           </button>
         </div>
@@ -228,6 +229,23 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { marked } from 'marked'
+import { markedHighlight } from 'marked-highlight'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css' // 使用GitHub风格的高亮样式
+
+// 配置marked插件
+marked.use(markedHighlight({
+  highlight: (code, lang) => {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(code, { language: lang }).value
+      } catch (err) {
+        console.error('Highlight error:', err)
+      }
+    }
+    return hljs.highlightAuto(code).value
+  }
+}))
 
 const props = defineProps({
   messages: { type: Array, default: () => [] },
@@ -256,14 +274,14 @@ function hasImages(content) {
 function hasVoice(content) {
   if (typeof content !== 'string') return false
   // 兼容新旧格式：固定标记、中文、英文
-  return content.startsWith('[voice-message]') || 
-         content.includes('[语音消息]') || 
-         content.includes('[Voice Message]') ||
-         content.includes('[वॉयस मैसेज]') ||
-         content.includes('[Голосовое сообщение]') ||
-         content.includes('[Sprachnachricht]') ||
-         content.includes('[Message vocal]') ||
-         content.includes('[音声メッセージ]')
+  return content.startsWith('[voice-message]') ||
+    content.includes('[语音消息]') ||
+    content.includes('[Voice Message]') ||
+    content.includes('[वॉयस मैसेज]') ||
+    content.includes('[Голосовое сообщение]') ||
+    content.includes('[Sprachnachricht]') ||
+    content.includes('[Message vocal]') ||
+    content.includes('[音声メッセージ]')
 }
 
 function extractImages(content) {
@@ -293,14 +311,14 @@ function renderMarkdown(raw) {
   }
 
   renderer.listitem = (token) => {
-    const content = marked.parser(token.tokens, { async: false, renderer })
-    return `<li class="ml-6">${content}</li>`
+    return `<li class="ml-6">${token.text}</li>`
   }
 
   renderer.code = (token) => {
     const code = token.text
+    const lang = token.lang || ''
     return code.includes('\n')
-      ? `<pre class="bg-gray-100 p-4 rounded text-sm overflow-x-auto"><code>${code}</code></pre>`
+      ? `<pre class="bg-gray-100 p-4 rounded text-sm overflow-x-auto"><code class="language-${lang}">${code}</code></pre>`
       : `<code class="bg-gray-100 px-1 py-0.5 rounded text-sm">${code}</code>`
   }
 
@@ -489,6 +507,43 @@ const messages = ref([
   ...props.messages
 ])
 
+// === 流式输出功能 ===
+// 开始流式消息
+function startStreamMessage(type = 'robot', sender = '扣子智能体助手') {
+  const messageId = generateId()
+  const streamMessage = {
+    id: messageId,
+    type,
+    sender,
+    content: '',
+    isStreaming: true,
+    timestamp: new Date().toISOString()
+  }
+  messages.value.push(streamMessage)
+  scrollToBottom()
+  return messageId
+}
+
+// 更新流式消息内容
+function updateStreamMessage(messageId, contentChunk) {
+  const messageIndex = messages.value.findIndex(msg => msg.id === messageId)
+  if (messageIndex !== -1) {
+    messages.value[messageIndex].content += contentChunk
+    // 使用nextTick确保DOM更新后再滚动到底部
+    setTimeout(() => {
+      scrollToBottom()
+    }, 0)
+  }
+}
+
+// 结束流式消息
+function endStreamMessage(messageId) {
+  const messageIndex = messages.value.findIndex(msg => msg.id === messageId)
+  if (messageIndex !== -1) {
+    messages.value[messageIndex].isStreaming = false
+  }
+}
+
 const emojis = [
   '👌', '💪', '✌️', '👍', '👎', '🌸', '💐', '🌹', '❤️', '💛', '💙', '💜', '🤝', '👏', '🎉', '🎊',
   '🙏', '😢', '😤', '😡', '😱', '😳', '🤯', '🤔', '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂',
@@ -532,10 +587,10 @@ function handleInput() {
 
 function handlePaste(event) {
   // 检查是否包含图片
-  const hasImage = Array.from(event.clipboardData.items).some(item => 
+  const hasImage = Array.from(event.clipboardData.items).some(item =>
     item.type.indexOf('image') !== -1
   );
-  
+
   // 如果包含图片，处理图片粘贴
   if (hasImage) {
     event.preventDefault()
@@ -628,7 +683,7 @@ async function toggleVoiceRecording() {
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
         const audioUrl = URL.createObjectURL(audioBlob)
-        
+
         // 创建Audio对象计算时长
         const audio = new Audio(audioUrl)
         audio.onloadedmetadata = () => {
@@ -637,7 +692,7 @@ async function toggleVoiceRecording() {
           messages.value.push({ id: generateId(), type: 'user', content: '[voice-message]', audioUrl, duration, timestamp: new Date().toISOString() })
           emit('send-message', '[voice-message]')
         }
-        
+
         stream.getTracks().forEach(t => t.stop())
         scrollToBottom()
       }
@@ -699,7 +754,7 @@ function handleClickOutside(event) {
   if (picker && button && !picker.contains(event.target) && !button.contains(event.target)) {
     showEmojiPicker.value = false
   }
-  
+
   // 关闭语言选择菜单
   const languageMenu = document.querySelector('.language-menu')
   const languageButton = event.target.closest('.language-button')
@@ -725,23 +780,43 @@ watch(
 </script>
 
 <style scoped>
-.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
 /* 全局滚动条样式 */
 /* WebKit 浏览器 (Chrome, Safari) */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
 
 /* Firefox 浏览器 */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.1) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 /* 特定组件保持原有样式 */
-.chat-messages { scroll-behavior: smooth; }
-input:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.chat-messages {
+  scroll-behavior: smooth;
+}
+
+input:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
 
 /* 录音横波动画 */
 .wave-animation {
@@ -781,9 +856,12 @@ input:focus { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 }
 
 @keyframes wave-animation {
-  0%, 100% {
+
+  0%,
+  100% {
     height: 4px;
   }
+
   50% {
     height: 20px;
   }
