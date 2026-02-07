@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="chat-window w-80 h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
-    <!-- 顶部标题栏 -->
-    <div class="chat-header bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 flex items-center justify-between">
+  <div class="h-screen w-screen bg-gray-100 flex flex-col">
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 flex items-center justify-between flex-shrink-0">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-          <img src="../assets/logo.png" alt="logo" class="w-10 h-10 object-contain" />
+          <img :src="logoUrl" alt="logo" class="w-10 h-10 object-contain" />
         </div>
         <div class="text-white">
           <h3 class="font-semibold text-base">唯一客服</h3>
@@ -15,61 +13,46 @@
           </div>
         </div>
       </div>
-      <button @click="$emit('close')" class="text-white hover:bg-blue-700 p-2 rounded-full transition">
-        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
-        </svg>
-      </button>
     </div>
 
-    <!-- 消息区域 -->
-    <div ref="chatMessages" class="chat-messages flex-1 p-4 bg-gray-50 overflow-y-auto space-y-4">
+    <div ref="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4">
       <div v-for="msg in messages" :key="msg.id">
-        <!-- 系统时间戳 -->
         <div v-if="isTimestampMessage(msg)" class="text-center text-xs text-gray-500 mb-4">
           <span class="px-3 py-1 bg-gray-200 rounded-full">{{ msg.content }}</span>
         </div>
 
-        <!-- 系统通知 -->
         <div v-else-if="msg.type === 'system'" class="flex justify-center">
           <div class="text-xs text-gray-500 bg-gray-100 px-4 py-2 rounded-lg max-w-xs text-center">
             {{ normalizeContent(msg.content) }}
           </div>
         </div>
 
-        <!-- 机器人消息 -->
         <div v-else-if="msg.type === 'robot'" class="flex gap-3">
           <div class="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center">
             <span class="text-xs font-bold">AI</span>
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2 max-w-[70%]">
             <span class="text-xs text-gray-500">{{ msg.sender }}</span>
-            <div class="bg-white px-4 py-1.5 rounded-lg rounded-tl-none shadow-sm border border-gray-100 max-w-xs">
+            <div class="bg-white px-4 py-1.5 rounded-lg rounded-tl-none shadow-sm border border-gray-100">
               <div class="text-sm" v-html="renderMarkdown(msg.content)"></div>
             </div>
           </div>
         </div>
 
-        <!-- 客服消息 -->
         <div v-else-if="msg.type === 'service'" class="flex gap-3">
           <div class="w-8 h-8 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center">
-            <img src="../assets/logo.png" alt="客服" class="w-6 h-6 object-contain" />
+            <img :src="logoUrl" alt="客服" class="w-6 h-6 object-contain" />
           </div>
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2 max-w-[70%]">
             <span class="text-xs text-gray-500">{{ msg.sender }}</span>
-            <div class="bg-white px-4 py-1.5 rounded-lg rounded-tl-none shadow-sm border border-gray-100 max-w-xs">
+            <div class="bg-white px-4 py-1.5 rounded-lg rounded-tl-none shadow-sm border border-gray-100">
               <div v-if="hasImages(msg.content)" class="space-y-2">
                 <img v-for="(src, index) in extractImages(msg.content)" :key="'img-' + msg.id + '-' + index" :src="src"
                   :alt="'图片' + index"
                   class="max-w-[200px] max-h-[200px] rounded cursor-pointer hover:opacity-90 transition-opacity" />
               </div>
               <div v-else-if="hasVoice(msg.content)" class="flex items-center gap-2 text-sm">
-                <svg t="1765465928183" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                  xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                  <path
-                    d="M487.648 240a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v546.784a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V240z m155.84 89.04a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04z m155.824 144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v123.824a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16v-123.84z m-467.488-144.704a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v346.432a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V329.04zM176 473.76a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v112.688a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16V473.76z"
-                    fill="currentColor" />
-                </svg>
+                <span v-html="VoiceIcon()"></span>
                 {{ t('voiceMessage') }}
                 <span class="text-xs text-gray-500">{{ formatDuration(msg.duration) }}</span>
               </div>
@@ -78,11 +61,9 @@
           </div>
         </div>
 
-        <!-- 用户消息 -->
-        <div v-else-if="msg.type === 'user'" class="flex justify-end gap-3">
-          <div class="flex flex-col max-w-3xs rounded-tl-lg rounded-tr-none rounded-br-lg rounded-bl-lg max-h-52 overflow-auto no-scrollbar gap-2 items-end">
-            <div
-              class="bg-blue-100 text-black px-4 py-1.5  shadow-sm max-w-full">
+        <div v-else-if="msg.type === 'user'" class="flex gap-3 justify-end">
+          <div class="flex flex-col max-w-[70%] items-end gap-2">
+            <div class="bg-blue-100 text-black px-4 py-1.5 shadow-sm">
               <div v-if="hasImages(msg.content)" class="space-y-2">
                 <img v-for="(src, index) in extractImages(msg.content)" :key="'img-' + msg.id + '-' + index" :src="src"
                   :alt="'图片' + index"
@@ -91,12 +72,7 @@
               <div v-else-if="hasVoice(msg.content)" class="flex items-center gap-2 text-sm">
                 <button @click="togglePlayAudio(msg)"
                   class="flex items-center justify-center text-blue-600 hover:text-blue-800">
-                  <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                    <path
-                      :d="msg.isPlaying ? 'M512 80c-238.656 0-432 193.344-432 432s193.344 432 432 432 432-193.344 432-432S750.656 80 512 80zM576 680c0 17.664-14.336 32-32 32H400c-17.664 0-32-14.336-32-32V344c0-17.664 14.336-32 32-32h144c17.664 0 32 14.336 32 32v336z' : 'M374.464 240.96l459.824 272.96a40 40 0 0 1 0 70.08L374.464 783.04a40 40 0 0 1-60.544-35.04V276c0-24.32 20.48-40.96 40.32-35.04zM352 400.96a16 16 0 0 1 16-16h16a16 16 0 0 1 16 16v224a16 16 0 0 1-16 16h-16a16 16 0 0 1-16-16v-224z'"
-                      fill="currentColor" />
-                  </svg>
+                  <span v-html="PlayPauseIcon(msg.isPlaying)"></span>
                 </button>
                 <span>{{ t('voiceMessage') }}</span>
                 <span class="text-xs text-gray-500">{{ formatDuration(msg.duration) }}</span>
@@ -105,14 +81,14 @@
               <div v-else class="text-sm break-all" v-html="renderMarkdown(msg.content)"></div>
             </div>
           </div>
-          <img :src="`/src/assets/avatars/head${avatarNumber}.svg`"
-            class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="用户头像" />
+
+          <span class="w-6 h-6 overflow-hidden" v-html="avatars[`head${avatarNumber}`] || avatars.head01"></span>
+
         </div>
       </div>
     </div>
 
-    <!-- 快捷回复 -->
-    <div class="quick-replies px-2 py-1 bg-gray-50 border-y border-gray-200">
+    <div class="quick-replies px-2 py-1 bg-gray-50 border-y border-gray-200 flex-shrink-0">
       <div class="flex gap-1 overflow-x-auto">
         <button
           class="px-4 py-1.5 bg-blue-50 text-xs text-blue-700 rounded-full shadow-sm hover:bg-blue-100 transition whitespace-nowrap border border-blue-200">{{
@@ -126,18 +102,12 @@
       </div>
     </div>
 
-    <!-- 输入区域 -->
-    <div class="chat-input bg-white">
-      <div class="flex flex-col py-1">
-        <!-- 功能按钮 -->
-        <div class="flex items-center gap-2 pb-1 pl-2 relative">
+    <div class="bg-white border-t border-gray-200 p-3 flex-shrink-0">
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2 pb-2 relative">
           <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 emoji-button"
             @click="toggleEmojiPicker" :title="t('emojiButton')">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 9h.01M8.99 9H9m12 3a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6.6 13a5.5 5.5 0 0 0 10.81 0H6.6Z" />
-            </svg>
+            <span v-html="EmojiIcon()"></span>
           </button>
 
           <div v-if="showEmojiPicker"
@@ -152,19 +122,12 @@
 
           <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100"
             @click="selectImage" :title="t('imageButton')">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-              <path fill-rule="evenodd" d="M13 10a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2H14a1 1 0 0 1-1-1Z"
-                clip-rule="evenodd" />
-              <path fill-rule="evenodd"
-                d="M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12c0 .556-.227 1.06-.593 1.422A.999.999 0 0 1 20.5 20H4a2.002 2.002 0 0 1-2-2V6Zm6.892 12 3.833-5.356-3.99-4.322a1 1 0 0 0-1.549.097L4 12.879V6h16v9.95l-3.257-3.619a1 1 0 0 0-1.557.088L11.2 18H8.892Z"
-                clip-rule="evenodd" />
-            </svg>
+            <span v-html="ImageIcon()"></span>
           </button>
 
           <button class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 relative"
             :class="{ 'text-red-500': recording }" @click="toggleVoiceRecording"
             :title="recording ? t('releaseToStop') : t('holdToRecord')">
-            <!-- 录音时显示横波动画，否则显示默认图标 -->
             <template v-if="recording">
               <div class="wave-animation">
                 <div class="wave-bar"></div>
@@ -175,27 +138,15 @@
               </div>
             </template>
             <template v-else>
-              <svg t="1765452216704" class="icon w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
-                xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <path
-                  d="M512 705.728c105.888 0 192-86.112 192-192L704 257.952c0-105.888-86.112-192-192-192s-192 86.112-192 192l0 255.776C320 619.584 406.112 705.728 512 705.728z" />
-                <path
-                  d="M864 479.776 864 352c0-17.664-14.304-32-32-32s-32 14.336-32 32l0 127.776c0 160.16-129.184 290.464-288 290.464-158.784 0-288-130.304-288-290.464L224 352c0-17.664-14.336-32-32-32s-32 14.336-32 32l0 127.776c0 184.608 140.864 336.48 320 352.832L480 896 288 896c-17.664 0-32 14.304-32 32s14.336 32 32 32l448 0c17.696 0 32-14.304 32-32s-14.304-32-32-32l-192 0 0-63.36C723.136 816.256 864 664.384 864 479.776z" />
-              </svg>
+              <span v-html="MicrophoneIcon()"></span>
             </template>
           </button>
 
           <button
             class="text-gray-500 hover:text-blue-500 transition p-2 rounded-full hover:bg-gray-100 relative language-button"
             @click="toggleLanguageMenu" :title="t('languageButton')">
-            <svg t="1765451632654" class="w-6 h-6" viewBox="0 0 1024 1024" version="1.1"
-              xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-              <path
-                d="M848.805886 805.572222c70.998007-81.260745 109.779266-184.217628 109.779266-293.14448 0-119.204939-46.421262-231.277434-130.713041-315.569212C744.876861 113.862257 634.94103 67.61598 517.788843 66.213028c-1.924839-0.599657-10.290367-0.592494-12.227486 0.01535C388.878868 67.945485 279.434224 114.159016 196.73471 196.85853 113.863281 279.730982 67.630307 389.460106 66.095347 506.415818c-0.428765 1.64957-0.436952 8.601912-0.021489 10.226922 1.082658 117.628024 47.364751 228.058113 130.660852 311.354214 84.291778 84.291778 196.36325 130.713041 315.569212 130.713041 119.204939 0 231.277434-46.421262 315.569212-130.713041 6.139837-6.139837 12.054547-12.444427 17.789155-18.871813 0.50756-0.453325 1.001817-0.928139 1.471514-1.440815C847.750857 807.012014 848.295256 806.299793 848.805886 805.572222zM107.447151 532.043499l187.501418 0c1.322112 65.678862 9.253758 127.264499 22.505573 182.112688-61.690014 16.687054-100.819197 38.371936-121.076566 51.906184C144.30971 701.336206 111.676475 620.35687 107.447151 532.043499zM195.881272 259.408121c20.090571 13.556761 59.242266 35.461653 121.340579 52.260248-12.998035 54.127781-20.827351 114.778116-22.243607 179.432649L107.525945 491.101018C112.076588 403.731134 144.437623 323.612399 195.881272 259.408121zM917.081898 491.099994 729.628576 491.099994c-1.415232-64.630996-9.240455-125.260865-22.229281-179.37432 61.95505-16.693194 101.235682-38.444591 121.56673-52.020794C880.270505 323.860039 912.537396 403.866211 917.081898 491.099994zM688.677908 491.099994 532.167319 491.099994 532.167319 335.061149c52.209082-1.094938 97.103572-6.453992 135.272893-14.033621C680.000272 373.163955 687.286212 430.896844 688.677908 491.099994zM532.167319 294.115598 532.167319 109.918435c36.84107 10.398838 72.779583 49.205679 100.926644 110.015649 8.810666 19.035542 16.645099 39.641859 23.464411 61.521169C621.531626 288.227494 580.261687 293.062616 532.167319 294.115598zM491.223814 110.273523l0 183.805236c-47.504944-1.12666-88.378863-6.001691-123.120109-12.802584 6.807033-21.812795 14.623046-42.35976 23.409153-61.344137C419.351903 159.792333 454.809463 121.175827 491.223814 110.273523zM491.223814 335.040682l0 156.059312L335.928912 491.099994c1.391696-60.213383 8.679683-117.955482 21.243837-170.099073C395.008472 328.536548 439.487499 333.887416 491.223814 335.040682zM335.893096 532.043499l155.330718 0 0 158.667719c-51.609425 1.194198-96.019891 6.563486-133.821845 14.103206C344.576873 651.927913 337.193719 593.243349 335.893096 532.043499zM491.223814 731.672118l0 182.909843c-36.415374-10.902304-71.871911-49.51881-99.709933-109.659539-8.679683-18.752086-16.409738-39.034015-23.157419-60.551074C402.9964 737.645157 443.773106 732.820268 491.223814 731.672118zM532.167319 914.937049 532.167319 731.608673c47.904033 1.025353 89.103364 5.862521 124.116809 12.656251-6.755868 21.555945-14.497179 41.87369-23.190165 60.656475C604.946902 865.73137 569.008388 904.538211 532.167319 914.937049zM532.167319 690.660052 532.167319 532.043499l156.546406 0c-1.298576 61.096497-8.66024 119.68487-21.445428 172.502819C629.154233 697.013761 584.319096 691.710988 532.167319 690.660052zM729.659275 532.043499l187.501418 0c-4.221138 88.138386-36.732599 168.973436-88.620363 233.635131-20.469194-13.668301-59.635215-35.298947-121.30374-51.868321C720.43724 659.049101 728.33921 597.585237 729.659275 532.043499zM801.518906 228.742704c-18.329461 11.570523-52.309366 29.355585-104.858186 43.493583-19.295462-63.056128-46.110177-115.004267-78.06189-150.97655C689.00025 140.410913 751.833297 178.097234 801.518906 228.742704zM406.007991 121.259738c-31.905664 35.920094-58.690704 87.768973-77.979002 150.702304-52.40351-14.241352-86.370113-32.099069-104.581893-43.587728C273.076422 177.914062 335.777463 140.364865 406.007991 121.259738zM223.917816 796.963147c18.284435-11.535731 52.098565-29.230742 104.332207-43.335994 19.271926 62.60485 45.976124 114.186645 77.757968 149.968593C335.99952 884.550994 273.472442 847.181899 223.917816 796.963147zM618.59883 903.595746c31.801287-35.803437 58.517765-87.426165 77.792761-150.08218 51.984978 14.023388 85.972047 31.631418 104.533798 43.208081C751.3329 847.061149 688.718841 884.521319 618.59883 903.595746z"
-                p-id="3102" />
-            </svg>
+            <span v-html="LanguageIcon()"></span>
 
-            <!-- 语言选择菜单 -->
             <div v-if="showLanguageMenu"
               class="language-menu absolute bottom-full right-0 mb-2 bg-white border rounded-lg shadow-lg p-1 z-10 w-28"
               @click.stop>
@@ -209,8 +160,7 @@
           </button>
         </div>
 
-        <!-- 输入框 -->
-        <div class="relative mx-2 w-[calc(100%-16px)]">
+        <div class="relative">
           <div ref="inputDiv" contenteditable="true" @input="handleInput" @paste="handlePaste"
             @keypress.enter.exact="sendMessage" @keypress.enter.shift="" placeholder="Please enter your message"
             class="w-full border border-gray-300 rounded-lg px-4 py-3 pr-16 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y min-h-[80px] max-h-[150px] overflow-y-auto"
@@ -227,13 +177,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { marked } from 'marked'
 import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css' // 使用GitHub风格的高亮样式
+import 'highlight.js/styles/github.css'
+import { VoiceIcon, PlayPauseIcon, MicrophoneIcon, LanguageIcon, EmojiIcon, ImageIcon, avatars } from './svg.js'
 
-// 配置marked插件
 marked.use(markedHighlight({
   highlight: (code, lang) => {
     if (lang && hljs.getLanguage(lang)) {
@@ -247,13 +197,11 @@ marked.use(markedHighlight({
   }
 }))
 
-const props = defineProps({
-  messages: { type: Array, default: () => [] },
-  userId: { type: String, default: '' }
+// 计算 logo URL
+const logoUrl = computed(() => {
+    return './logo.png'
 })
-const emit = defineEmits(['close', 'send-message', 'language-changed'])
 
-// === 工具函数 ===
 function calculateCRC(str) {
   let crc = 0
   for (let i = 0; i < str.length; i++) {
@@ -270,10 +218,8 @@ function hasImages(content) {
   return typeof content === 'string' && content.includes('[img:')
 }
 
-// 语音消息检测使用固定的标记，并兼容旧格式
 function hasVoice(content) {
   if (typeof content !== 'string') return false
-  // 兼容新旧格式：固定标记、中文、英文
   return content.startsWith('[voice-message]') ||
     content.includes('[语音消息]') ||
     content.includes('[Voice Message]') ||
@@ -295,7 +241,6 @@ function extractImages(content) {
   return matches
 }
 
-// === Markdown 渲染器 ===
 function renderMarkdown(raw) {
   const text = normalizeContent(raw)
   if (!text.trim()) return ''
@@ -337,8 +282,69 @@ function renderMarkdown(raw) {
   }
 }
 
-// === 响应式状态 ===
-const avatarNumber = calculateCRC(props.userId)
+function getAppIdFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search)
+  return urlParams.get('data-kefu-appid') || urlParams.get('appId') || 'default'
+}
+
+function getOrCreateUserId() {
+  let userId
+
+  if (typeof window !== 'undefined' && window.localStorage) {
+    userId = localStorage.getItem('kefu_user_id')
+  }
+
+  if (!userId && typeof document !== 'undefined') {
+    const cookieMatch = document.cookie.match(/kefu_user_id=([^;]+)/)
+    if (cookieMatch) {
+      userId = decodeURIComponent(cookieMatch[1])
+    }
+  }
+
+  if (!userId) {
+    const fingerprint = [
+      navigator.userAgent,
+      navigator.language,
+      screen.width + 'x' + screen.height,
+      (new Date()).getTimezoneOffset(),
+      navigator.hardwareConcurrency,
+      navigator.platform
+    ].join('|')
+
+    let hash = 0
+    for (let i = 0; i < fingerprint.length; i++) {
+      const char = fingerprint.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash
+    }
+
+    userId = Math.abs(hash).toString(16)
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('kefu_user_id', userId)
+    }
+
+    if (typeof document !== 'undefined') {
+      const expires = new Date()
+      expires.setTime(expires.getTime() + (10 * 365 * 24 * 60 * 60 * 1000))
+      document.cookie = `kefu_user_id=${encodeURIComponent(userId)};expires=${expires.toUTCString()};path=/`
+    }
+  }
+
+  return userId
+}
+
+const messages = ref([
+  { id: '1', type: 'system', content: '上午 10:30', timestamp: new Date().toISOString() },
+  { id: '2', type: 'system', content: '唯一客服 正在为您服务!', timestamp: new Date().toISOString() },
+  { id: '3', type: 'robot', sender: '扣子智能体助手', content: '您好！很高兴为您服务。请问有什么可以帮您？', timestamp: new Date().toISOString() },
+  { id: '4', type: 'service', sender: '唯一客服', content: '好的，已收到您的♥号，稍等，我们一对一联系您，给您介绍。', timestamp: new Date().toISOString() },
+  { id: '5', type: 'service', sender: '唯一客服', content: '没意向就没有聊的必要', timestamp: new Date().toISOString() }
+])
+
+const userId = ref(getOrCreateUserId())
+const appId = ref(getAppIdFromUrl())
+const avatarNumber = calculateCRC(userId.value)
 const inputText = ref('')
 const inputDiv = ref(null)
 const chatMessages = ref(null)
@@ -348,13 +354,9 @@ const audioChunks = ref([])
 const audioElements = ref([])
 let mediaRecorder = null
 
-// 语言相关状态
 const showLanguageMenu = ref(false)
-// 从localStorage加载语言设置，如果没有则使用默认中文
 const currentLanguage = ref(localStorage.getItem('chat_language') || 'zh')
 
-// 语言选项
-// 使用语言自身的名称，而不是翻译键，确保语言名称始终显示为自身语言表达
 const languages = [
   { label: '中文', value: 'zh' },
   { label: 'English', value: 'en' },
@@ -365,7 +367,6 @@ const languages = [
   { label: '日本語', value: 'ja' }
 ]
 
-// 国际化翻译
 const translations = {
   zh: {
     holdToRecord: '开始录音',
@@ -378,7 +379,6 @@ const translations = {
     emojiButton: '表情',
     imageButton: '图片',
     languageButton: '语言',
-
     featureIntro: '功能介绍',
     humanService: '人工服务',
     aiService: 'AI客服'
@@ -475,73 +475,20 @@ const translations = {
   }
 }
 
-// 获取翻译
 const t = (key) => {
   return translations[currentLanguage.value][key] || key
 }
 
-// 切换语言菜单显示
 const toggleLanguageMenu = () => {
   showLanguageMenu.value = !showLanguageMenu.value
 }
 
-// 切换语言
 const changeLanguage = (lang) => {
   console.log('切换语言:', lang)
   currentLanguage.value = lang
-  // 保存语言设置到localStorage
   localStorage.setItem('chat_language', lang)
   showLanguageMenu.value = false
-  // 通知父组件语言变化
-  emit('language-changed', lang)
-  // 语言切换后的逻辑可以在这里添加
-  scrollToBottom() // 触发页面重新渲染
-}
-
-const messages = ref([
-  { id: '1', type: 'system', content: '上午 10:30', timestamp: new Date().toISOString() },
-  { id: '2', type: 'system', content: '唯一客服 正在为您服务!', timestamp: new Date().toISOString() },
-  { id: '3', type: 'robot', sender: '扣子智能体助手', content: '您好！很高兴为您服务。请问有什么可以帮您？', timestamp: new Date().toISOString() },
-  { id: '4', type: 'service', sender: '唯一客服', content: '好的，已收到您的♥号，稍等，我们一对一联系您，给您介绍。', timestamp: new Date().toISOString() },
-  { id: '5', type: 'service', sender: '唯一客服', content: '没意向就没有聊的必要', timestamp: new Date().toISOString() },
-  ...props.messages
-])
-
-// === 流式输出功能 ===
-// 开始流式消息
-function startStreamMessage(type = 'robot', sender = '扣子智能体助手') {
-  const messageId = generateId()
-  const streamMessage = {
-    id: messageId,
-    type,
-    sender,
-    content: '',
-    isStreaming: true,
-    timestamp: new Date().toISOString()
-  }
-  messages.value.push(streamMessage)
   scrollToBottom()
-  return messageId
-}
-
-// 更新流式消息内容
-function updateStreamMessage(messageId, contentChunk) {
-  const messageIndex = messages.value.findIndex(msg => msg.id === messageId)
-  if (messageIndex !== -1) {
-    messages.value[messageIndex].content += contentChunk
-    // 使用nextTick确保DOM更新后再滚动到底部
-    setTimeout(() => {
-      scrollToBottom()
-    }, 0)
-  }
-}
-
-// 结束流式消息
-function endStreamMessage(messageId) {
-  const messageIndex = messages.value.findIndex(msg => msg.id === messageId)
-  if (messageIndex !== -1) {
-    messages.value[messageIndex].isStreaming = false
-  }
 }
 
 const emojis = [
@@ -553,13 +500,12 @@ const emojis = [
   '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐', '😕'
 ]
 
-// === 消息相关 ===
 function isTimestampMessage(msg) {
   return msg.type === 'system' && typeof msg.content === 'string' && msg.content.includes('上午')
 }
 
 function generateId() {
-  return props.userId + '_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 8)
+  return userId.value + '_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 8)
 }
 
 function sendMessage() {
@@ -573,7 +519,6 @@ function sendMessage() {
     timestamp: new Date().toISOString()
   })
 
-  emit('send-message', content)
   inputText.value = ''
   if (inputDiv.value) inputDiv.value.innerHTML = ''
   scrollToBottom()
@@ -586,12 +531,10 @@ function handleInput() {
 }
 
 function handlePaste(event) {
-  // 检查是否包含图片
   const hasImage = Array.from(event.clipboardData.items).some(item =>
     item.type.indexOf('image') !== -1
   );
 
-  // 如果包含图片，处理图片粘贴
   if (hasImage) {
     event.preventDefault()
     const items = event.clipboardData.items
@@ -604,9 +547,7 @@ function handlePaste(event) {
             const imgSrc = event.target.result
             const imageMessage = `[img:${imgSrc}]`
             messages.value.push({ id: generateId(), type: 'user', content: imageMessage, timestamp: new Date().toISOString() })
-            emit('send-message', imageMessage)
             scrollToBottom()
-            // 清空输入框
             if (inputDiv.value) {
               inputDiv.value.innerHTML = ''
               inputText.value = ''
@@ -617,8 +558,6 @@ function handlePaste(event) {
       }
     }
   } else {
-    // 只处理文本粘贴，使用默认行为但确保inputText同步
-    // 延迟获取粘贴的文本，让默认粘贴行为完成
     setTimeout(() => {
       if (inputDiv.value) {
         inputText.value = inputDiv.value.innerText || ''
@@ -627,7 +566,6 @@ function handlePaste(event) {
   }
 }
 
-// === 表情 ===
 function toggleEmojiPicker() {
   showEmojiPicker.value = !showEmojiPicker.value
 }
@@ -646,7 +584,6 @@ function selectEmoji(emoji) {
   showEmojiPicker.value = false
 }
 
-// === 图片 ===
 function selectImage() {
   const input = document.createElement('input')
   input.type = 'file'
@@ -659,7 +596,6 @@ function selectImage() {
         const imgSrc = event.target.result
         const imageMessage = `[img:${imgSrc}]`
         messages.value.push({ id: generateId(), type: 'user', content: imageMessage, timestamp: new Date().toISOString() })
-        emit('send-message', imageMessage)
         scrollToBottom()
       }
       reader.readAsDataURL(file)
@@ -668,7 +604,6 @@ function selectImage() {
   input.click()
 }
 
-// === 语音 ===
 async function toggleVoiceRecording() {
   if (recording.value) {
     mediaRecorder.stop()
@@ -684,13 +619,10 @@ async function toggleVoiceRecording() {
         const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
         const audioUrl = URL.createObjectURL(audioBlob)
 
-        // 创建Audio对象计算时长
         const audio = new Audio(audioUrl)
         audio.onloadedmetadata = () => {
           const duration = audio.duration
-          // 内部使用固定标记存储语音消息，显示时再翻译
           messages.value.push({ id: generateId(), type: 'user', content: '[voice-message]', audioUrl, duration, timestamp: new Date().toISOString() })
-          emit('send-message', '[voice-message]')
         }
 
         stream.getTracks().forEach(t => t.stop())
@@ -730,7 +662,6 @@ function onAudioEnded(msg) {
   msg.isPlaying = false
 }
 
-// 格式化音频时长（如：00:03）
 function formatDuration(duration) {
   if (!duration || isNaN(duration)) return '00:00'
   const minutes = Math.floor(duration / 60)
@@ -738,7 +669,6 @@ function formatDuration(duration) {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 
-// === 滚动 & UI ===
 function scrollToBottom() {
   setTimeout(() => {
     if (chatMessages.value) {
@@ -748,14 +678,12 @@ function scrollToBottom() {
 }
 
 function handleClickOutside(event) {
-  // 关闭表情选择器
   const picker = document.querySelector('.emoji-picker')
   const button = document.querySelector('.emoji-button')
   if (picker && button && !picker.contains(event.target) && !button.contains(event.target)) {
     showEmojiPicker.value = false
   }
 
-  // 关闭语言选择菜单
   const languageMenu = document.querySelector('.language-menu')
   const languageButton = event.target.closest('.language-button')
   if (languageMenu && !languageMenu.contains(event.target) && !languageButton) {
@@ -784,8 +712,6 @@ watch(
   scrollbar-width: none;
 }
 
-/* 全局滚动条样式 */
-/* WebKit 浏览器 (Chrome, Safari) */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -795,44 +721,25 @@ watch(
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
+  background: #cbd5e1;
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: #94a3b8;
 }
 
-/* Firefox 浏览器 */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
-}
-
-/* 特定组件保持原有样式 */
-.chat-messages {
-  scroll-behavior: smooth;
-}
-
-input:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* 录音横波动画 */
 .wave-animation {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 24px;
-  height: 24px;
-  padding: 4px 0;
+  gap: 2px;
+  height: 20px;
 }
 
 .wave-bar {
   width: 3px;
-  background-color: currentColor;
-  border-radius: 2px;
-  animation: wave-animation 1.2s infinite ease-in-out;
+  background: #ef4444;
+  animation: wave 1s ease-in-out infinite;
 }
 
 .wave-bar:nth-child(1) {
@@ -855,7 +762,7 @@ input:focus {
   animation-delay: 0.4s;
 }
 
-@keyframes wave-animation {
+@keyframes wave {
 
   0%,
   100% {
@@ -863,7 +770,7 @@ input:focus {
   }
 
   50% {
-    height: 20px;
+    height: 16px;
   }
 }
 </style>
