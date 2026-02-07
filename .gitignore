@@ -58,3 +58,4 @@ go.work.sum
 *.tmp
 *.temp
 .cache/
+web-admin/.vscode/extensions.json

@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-primary-light: #60a5fa;
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-success-dark: #059669;
+  --color-success-light: #34d399;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-background: #f3f4f6;
+  --color-card: #ffffff;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+}
+
+
+/* 统一的字体大小方案 */
+.text-page-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  /* text-2xl */
+}
+
+.text-card-title {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  /* text-lg */
+}
+
+.text-stat-value {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  /* text-2xl */
+}
+
+.text-table-header {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  /* text-xs */
+}
+
+.text-table-cell {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* text-sm */
+}
+
+.text-button {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* text-sm */
+}
+
+.text-secondary {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* text-sm */
+  color: var(--color-text-secondary);
+}
+
+.text-tertiary {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  /* text-xs */
+  color: var(--color-text-secondary);
+}
+
+/* 统一的渐变背景类 */
+.bg-gradient-primary {
+  background: linear-gradient(to right, var(--color-primary), var(--color-primary-dark));
+}
+
+.bg-gradient-card {
+  background: var(--color-card);
+}
+
+/* 统一的文本颜色 */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-primary-dark {
+  color: var(--color-primary-dark);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+/* 统一的状态标签颜色 */
+.status-active {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.status-inactive {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.status-maintenance {
+  background-color: var(--color-warning);
+  color: white;
+}
+
+/* 套餐状态标签颜色 */
+.plan-free {
+  background-color: #dbeafe;
+  /* bg-blue-100 */
+  color: #1e40af;
+  /* text-blue-800 */
+}
+
+.plan-basic {
+  background-color: #d1fae5;
+  /* bg-green-100 */
+  color: #065f46;
+  /* text-green-800 */
+}
+
+.plan-premium {
+  background-color: #f3e8ff;
+  /* bg-purple-100 */
+  color: #581c87;
+  /* text-purple-800 */
+}
+
+/* 全局隐藏滚动条 - 跨浏览器兼容 */
+/* Chrome, Safari */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* IE/Edge */
+* {
+  -ms-overflow-style: none;
+}
