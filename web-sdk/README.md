@@ -19,7 +19,7 @@
 ```
 +------------------+       +------------------+       +------------------+
 |   用户网站        |       |     你的 Server   |       |   WuKongIM Server |
-| (嵌入 kefu.min.js)| <---> | (API + 逻辑控制)  | <---> | (消息/用户/频道)  |
+| (嵌入 widget.min.js)| <---> | (API + 逻辑控制)  | <---> | (消息/用户/频道)  |
 +------------------+       +------------------+       +------------------+
          ↑
          | WebSocket / HTTP
@@ -45,7 +45,7 @@
 
 ### 1. 嵌入方式（不变）
 ```html
-<script src="./dist/kefu.min.js" data-kefu-appid="your_app_id" defer></script>
+<script src="./dist/widget.min.js" data-kefu-appid="your_app_id" defer></script>
 ```
 
 ### 2. 初始化流程（web-sdk 内部）
