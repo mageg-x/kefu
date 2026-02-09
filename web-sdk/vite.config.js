@@ -52,8 +52,8 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       input: {
-        widget: 'src/widget.js',
-        chat: 'src/chat.js'
+        widget: 'src/script/widget.js',
+        chat: 'src/script/chat.js'
       },
       output: {
         entryFileNames: chunk => {

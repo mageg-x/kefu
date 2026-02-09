@@ -44,7 +44,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Store user information in context for subsequent handlers
 		c.Set("userID", claims.UserID)
-		c.Set("username", claims.UserName)
+		c.Set("userName", claims.UserName)
 		c.Set("role", claims.Role)
 
 		c.Next() // Continue to next middleware or handler

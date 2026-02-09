@@ -7,7 +7,7 @@ import (
 	"kefu-server/config"
 	"kefu-server/models"
 	"kefu-server/router"
-	"kefu-server/utils"
+	"kefu-server/store"
 	"kefu-server/utils/logger"
 )
 
@@ -29,14 +29,14 @@ func main() {
 	}
 
 	// 初始化数据库
-	db, err := utils.InitDB(cfg.Admin.Database)
+	db, err := store.InitDB(cfg.Admin.Database)
 	if err != nil {
 		logger.Errorf("database connection failed: %v", err)
 		log.Fatal(err)
 	}
 
 	// 数据库迁移
-	if err := db.AutoMigrate(&models.User{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.App{}); err != nil {
 		logger.Errorf("database migration failed: %v", err)
 		log.Fatal(err)
 	}

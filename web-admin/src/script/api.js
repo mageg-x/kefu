@@ -35,7 +35,7 @@ class ApiService {
     // 响应拦截器
     this.api.interceptors.response.use(
       response => {
-        return response.data
+        return response
       },
       error => {
         const errorData = error.response?.data || {}
@@ -130,6 +130,23 @@ class ApiService {
   async logout() {
     await this.api.post('/logout')
     this.removeToken()
+  }
+
+  // App 管理
+  async listApps(params) {
+    return this.api.get('/apps/list', { params })
+  }
+
+  async createApp(data) {
+    return this.api.post('/apps/create', data)
+  }
+
+  async updateApp(appId, data) {
+    return this.api.put('/apps/update', { app_id: appId, ...data })
+  }
+
+  async deleteApp(appId) {
+    return this.api.delete('/apps/delete', { params: { app_id: appId } })
   }
 }
 

@@ -6,7 +6,7 @@
           <img :src="logoUrl" alt="logo" class="w-10 h-10 object-contain" />
         </div>
         <div class="text-white">
-          <h3 class="font-semibold text-base">唯一客服</h3>
+          <h3 class="font-semibold text-base">零点客服</h3>
           <div class="flex items-center gap-1 text-xs opacity-90 mt-0.5">
             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
             <span>{{ t('online') }}</span>
@@ -291,11 +291,11 @@ function getOrCreateUserId() {
   let userId
 
   if (typeof window !== 'undefined' && window.localStorage) {
-    userId = localStorage.getItem('kefu_user_id')
+    userId = localStorage.getItem('zerospace_kefu_user_id')
   }
 
   if (!userId && typeof document !== 'undefined') {
-    const cookieMatch = document.cookie.match(/kefu_user_id=([^;]+)/)
+    const cookieMatch = document.cookie.match(/zerospace_kefu_user_id=([^;]+)/)
     if (cookieMatch) {
       userId = decodeURIComponent(cookieMatch[1])
     }
@@ -321,13 +321,13 @@ function getOrCreateUserId() {
     userId = Math.abs(hash).toString(16)
 
     if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('kefu_user_id', userId)
+      localStorage.setItem('zerospace_kefu_user_id', userId)
     }
 
     if (typeof document !== 'undefined') {
       const expires = new Date()
       expires.setTime(expires.getTime() + (10 * 365 * 24 * 60 * 60 * 1000))
-      document.cookie = `kefu_user_id=${encodeURIComponent(userId)};expires=${expires.toUTCString()};path=/`
+      document.cookie = `zerospace_kefu_user_id=${encodeURIComponent(userId)};expires=${expires.toUTCString()};path=/`
     }
   }
 
@@ -336,10 +336,10 @@ function getOrCreateUserId() {
 
 const messages = ref([
   { id: '1', type: 'system', content: '上午 10:30', timestamp: new Date().toISOString() },
-  { id: '2', type: 'system', content: '唯一客服 正在为您服务!', timestamp: new Date().toISOString() },
+  { id: '2', type: 'system', content: '零点客服 正在为您服务!', timestamp: new Date().toISOString() },
   { id: '3', type: 'robot', sender: '扣子智能体助手', content: '您好！很高兴为您服务。请问有什么可以帮您？', timestamp: new Date().toISOString() },
-  { id: '4', type: 'service', sender: '唯一客服', content: '好的，已收到您的♥号，稍等，我们一对一联系您，给您介绍。', timestamp: new Date().toISOString() },
-  { id: '5', type: 'service', sender: '唯一客服', content: '没意向就没有聊的必要', timestamp: new Date().toISOString() }
+  { id: '4', type: 'service', sender: '零点客服', content: '好的，已收到您的♥号，稍等，我们一对一联系您，给您介绍。', timestamp: new Date().toISOString() },
+  { id: '5', type: 'service', sender: '零点客服', content: '没意向就没有聊的必要', timestamp: new Date().toISOString() }
 ])
 
 const userId = ref(getOrCreateUserId())

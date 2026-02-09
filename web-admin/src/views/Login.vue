@@ -101,6 +101,30 @@ const rememberPassword = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 
+// 错误提示映射
+const errorMessages = {
+    'invalid': '用户或密码不正确',
+    'Invalid': '用户或密码不正确',
+    'credentials': '用户或密码不正确',
+    'password': '用户或密码不正确',
+    'username': '用户或密码不正确',
+    '参数': '用户或密码不正确',
+    'parameter': '用户或密码不正确',
+    'network': '网络连接失败，请检查网络设置',
+    'Network': '网络连接失败，请检查网络设置',
+    'connection': '网络连接失败，请检查网络设置',
+    'Connection': '网络连接失败，请检查网络设置',
+    'timeout': '网络连接失败，请检查网络设置',
+    'Timeout': '网络连接失败，请检查网络设置',
+    'server': '服务器错误，请稍后重试',
+    'Server': '服务器错误，请稍后重试',
+    '500': '服务器错误，请稍后重试',
+    '502': '服务器错误，请稍后重试',
+    '503': '服务器错误，请稍后重试',
+    '504': '服务器错误，请稍后重试'
+}
+
+
 // 加载保存的登录信息
 const loadSavedLogin = () => {
     try {
@@ -136,6 +160,7 @@ const saveLogin = (username, password, remember) => {
 // 初始化加载
 loadSavedLogin()
 
+
 // 登录处理
 const handleLogin = async () => {
     try {
@@ -168,15 +193,9 @@ const handleLogin = async () => {
         router.push('/home')
     } catch (error) {
         console.error('登录失败:', error)
-        // 确保错误提示明确
-        if (error.message.includes('invalid') || error.message.includes('无效') ||
-            error.message.includes('error') || error.message.includes('错误') ||
-            error.message.includes('fail') || error.message.includes('失败') ||
-            error.message.includes('参数')) {
-            errorMessage.value = '用户或密码不正确'
-        } else {
-            errorMessage.value = error.message || '用户或密码不正确'
-        }
+        const errorMsg = error.message || ''
+        const matchedKey = Object.keys(errorMessages).find(key => errorMsg.includes(key))
+        errorMessage.value = matchedKey ? errorMessages[matchedKey] : '登录失败，请检查账号和密码'
     } finally {
         // 清除加载状态
         loading.value = false

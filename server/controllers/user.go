@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"kefu-server/models"
+	"kefu-server/service"
 	"kefu-server/utils"
 	"kefu-server/utils/logger"
 	"kefu-server/utils/response"
@@ -59,6 +60,15 @@ func verifyTimestamp(timestampStr string) bool {
 	return time.Now().Unix()-timestamp < 300
 }
 
+// IsAdmin 检查用户是否为管理员
+func IsAdmin(c *gin.Context) bool {
+	role, exists := c.Get("role")
+	if !exists {
+		return false
+	}
+	return role == "admin"
+}
+
 func (uc *UserController) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -74,8 +84,16 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	if err := utils.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
+	// 使用 UserService 获取用户
+	userService := service.GetUserService()
+	if userService == nil {
+		logger.Errorf("user service not initialed")
+		response.ResponseError(c, http.StatusInternalServerError, response.ErrCodeInternalError)
+		return
+	}
+
+	user, err := userService.GetUser(req.Username)
+	if err != nil || user == nil {
 		logger.Errorf("user does not exist: %s", req.Username)
 		response.ResponseError(c, http.StatusUnauthorized, response.ErrCodeInvalidCredentials)
 		return
@@ -111,19 +129,27 @@ func (uc *UserController) Login(c *gin.Context) {
 	logger.Infof("user login successful: %s", req.Username)
 	response.ResponseSuccess(c, LoginResponse{
 		Token: token,
-		User:  user,
+		User:  *user,
 	})
 }
 
 func (uc *UserController) GetUserInfo(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userName, exists := c.Get("userName")
 	if !exists {
+		logger.Errorf("failed get user name")
 		response.ResponseError(c, http.StatusUnauthorized, response.ErrCodeUnauthorized)
 		return
 	}
 
-	var user models.User
-	if err := utils.DB.First(&user, userID).Error; err != nil {
+	// 使用 UserService 获取用户
+	userService := service.GetUserService()
+	if userService == nil {
+		logger.Errorf("user service not initialed")
+		response.ResponseError(c, http.StatusInternalServerError, response.ErrCodeInternalError)
+		return
+	}
+	user, err := userService.GetUser(userName.(string))
+	if err != nil || user == nil {
 		logger.Errorf("get user info failed: %v", err)
 		response.ResponseError(c, http.StatusNotFound, response.ErrCodeNotFound)
 		return

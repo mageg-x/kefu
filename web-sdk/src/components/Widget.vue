@@ -1,25 +1,28 @@
 <template>
     <div class="fixed bottom-5 md:bottom-20 right-5 z-50 font-sans">
         <!-- 悬浮按钮 -->
-        <button v-if="!isOpen" @click="isOpen = true"
-            class="flex flex-col items-center p-1 rounded-2xl bg-white text-blue-600 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-blue-200">
+        <button v-if="!isOpen"
+            :disabled="configError"
+            @click="isOpen = true"
+            class="flex flex-col items-center p-1 rounded-2xl bg-white text-blue-600 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-blue-200"
+            :class="configError ? 'opacity-50 cursor-not-allowed' : ''">
             <div class="w-12 h-12 rounded-full bg-transparent shadow-md flex items-center justify-center">
-                <img :src="logoUrl" alt="logo" class="w-12 h-12 object-contain">
+                <img :src="config?.logo || logoUrl" alt="logo" class="w-12 h-12 object-contain">
             </div>
             <div></div>
-            <span class="font-medium text-xs p-2 whitespace-nowrap">{{ t('onlineConsultation') }}</span>
+            <span class="font-medium text-xs p-2 whitespace-nowrap">在线咨询</span>
         </button>
 
         <!-- 聊天窗口 -->
-        <div v-else class="chat-window w-80 h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
+        <div v-else-if="isOpen && !configError" class="chat-window w-80 h-[500px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
             <!-- 顶部标题栏 -->
             <div class="chat-header bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                        <img :src="logoUrl" alt="logo" class="w-10 h-10 object-contain" />
+                        <img :src="config?.logo || logoUrl" alt="logo" class="w-10 h-10 object-contain" />
                     </div>
                     <div class="text-white">
-                        <h3 class="font-semibold text-base">唯一客服</h3>
+                        <h3 class="font-semibold text-base">{{ config?.name ? config.name + '客服' : '零点客服' }}</h3>
                         <div class="flex items-center gap-1 text-xs opacity-90 mt-0.5">
                             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                             <span>{{ t('online') }}</span>
@@ -213,6 +216,7 @@ import { markedHighlight } from 'marked-highlight'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github.css'
 import { VoiceIcon, PlayPauseIcon, MicrophoneIcon, LanguageIcon, EmojiIcon, ImageIcon, CloseIcon, avatars } from './svg.js'
+import api from '../script/api.js'
 
 marked.use(markedHighlight({
   highlight: (code, lang) => {
@@ -228,8 +232,7 @@ marked.use(markedHighlight({
 }))
 
 const props = defineProps({
-    appId: { type: String, default: 'default' },
-    backendUrl: { type: String, default: 'http://localhost:9000' }
+    appId: { type: String, default: 'default' }
 })
 
 const emit = defineEmits(['send-message', 'language-changed'])
@@ -350,11 +353,11 @@ function getOrCreateUserId() {
     let userId;
     
     if (typeof window !== 'undefined' && window.localStorage) {
-        userId = localStorage.getItem('kefu_user_id');
+        userId = localStorage.getItem('zerospace_kefu_user_id');
     }
     
     if (!userId && typeof document !== 'undefined') {
-        const cookieMatch = document.cookie.match(/kefu_user_id=([^;]+)/);
+        const cookieMatch = document.cookie.match(/zerospace_kefu_user_id=([^;]+)/);
         if (cookieMatch) {
             userId = decodeURIComponent(cookieMatch[1]);
         }
@@ -364,28 +367,76 @@ function getOrCreateUserId() {
         userId = generateMachineId();
         
         if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.setItem('kefu_user_id', userId);
+            localStorage.setItem('zerospace_kefu_user_id', userId);
         }
         
         if (typeof document !== 'undefined') {
             const expires = new Date();
             expires.setTime(expires.getTime() + (10 * 365 * 24 * 60 * 60 * 1000));
-            document.cookie = `kefu_user_id=${encodeURIComponent(userId)};expires=${expires.toUTCString()};path=/`;
+            document.cookie = `zerospace_kefu_user_id=${encodeURIComponent(userId)};expires=${expires.toUTCString()};path=/`;
         }
     }
     
     return userId;
 }
 
+// 格式化时间
+function formatTime(date) {
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+// 获取当前时间文本
+function getCurrentTimeText() {
+  const now = new Date()
+  const hours = now.getHours()
+  
+  if (hours >= 5 && hours < 12) {
+    return '上午'
+  } else if (hours >= 12 && hours < 14) {
+    return '中午'
+  } else if (hours >= 14 && hours < 18) {
+    return '下午'
+  } else if (hours >= 18 && hours < 22) {
+    return '晚上'
+  } else {
+    return '深夜'
+  }
+}
+
+// 根据语言获取服务文本
+function getServiceText(appName) {
+  const lang = currentLanguage.value
+  const texts = {
+    zh: `${appName} 正在为您服务!`,
+    en: `${appName} is serving you!`,
+    hi: `${appName} आपकी सेवा कर रहा है!`,
+    ru: `${appName} обслуживает вас!`,
+    de: `${appName} bedient Sie!`,
+    fr: `${appName} vous sert!`,
+    ja: `${appName} がサービスを提供しています!`
+  }
+  return texts[lang] || texts.zh
+}
+
+// 格式化欢迎消息
+function formatWelcomeMessage(welcomeMsg, appName) {
+  const timeText = getCurrentTimeText()
+  const time = formatTime(new Date())
+  
+  return [
+    { id: '1', type: 'system', content: `${timeText} ${time}`, timestamp: new Date().toISOString() },
+    { id: '2', type: 'system', content: getServiceText(appName), timestamp: new Date().toISOString() },
+  ]
+}
+
 // === 响应式状态 ===
 const isOpen = ref(false)
-const messages = ref([
-  { id: '1', type: 'system', content: '上午 10:30', timestamp: new Date().toISOString() },
-  { id: '2', type: 'system', content: '唯一客服 正在为您服务!', timestamp: new Date().toISOString() },
-  { id: '3', type: 'robot', sender: '扣子智能体助手', content: '您好！很高兴为您服务。请问有什么可以帮您？', timestamp: new Date().toISOString() },
-  { id: '4', type: 'service', sender: '唯一客服', content: '好的，已收到您的♥号，稍等，我们一对一联系您，给您介绍。', timestamp: new Date().toISOString() },
-  { id: '5', type: 'service', sender: '唯一客服', content: '没意向就没有聊的必要', timestamp: new Date().toISOString() }
-])
+const config = ref(null)
+const configLoading = ref(true)
+const configError = ref(false)
+const messages = ref([])
 const userId = ref(getOrCreateUserId())
 const avatarNumber = calculateCRC(userId.value)
 const inputText = ref('')
@@ -747,9 +798,33 @@ function handleClickOutside(event) {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   scrollToBottom()
+  
+  // 获取应用配置
+  try {
+    // 设置 用户id
+    api.setUserId(getOrCreateUserId())
+
+    const response = await api.getConfig(props.appId)
+    if (response.code === 0) {
+      config.value = response.data
+      
+      // 添加欢迎消息
+      if (response.data?.welcome_msg) {
+        messages.value = formatWelcomeMessage(response.data.welcome_msg, response.data.name)
+      }
+    } else {
+      configError.value = true
+      console.error('获取配置失败:', response.msg)
+    }
+  } catch (error) {
+    configError.value = true
+    console.error('获取配置失败:', error)
+  } finally {
+    configLoading.value = false
+  }
 })
 
 onUnmounted(() => {

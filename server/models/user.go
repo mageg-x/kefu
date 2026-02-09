@@ -12,9 +12,12 @@ import (
 type User struct {
 	gorm.Model
 	Username string `gorm:"uniqueIndex;size:50;not null" json:"username"`
-	Password string `gorm:"size:255;not null" json:"-"` // 明文密码
-	Avatar   string `gorm:"size:255" json:"avatar"`
-	Role     string `gorm:"size:50;not null" json:"role"` // agent or admin
+	Password string `gorm:"size:255;not null" json:"-"`     // 明文密码
+	Avatar   string `gorm:"size:255" json:"avatar"`         // 头像
+	Role     string `gorm:"size:50;not null" json:"role"`   // agent or admin
+	Status   int    `gorm:"size:50;not null" json:"status"` // 1、在席 2、离席
+	Active   bool   `gorm:"default:true" json:"active"`     // 1、激活 0、禁用
+	Apps     string `gorm:"type:text" json:"apps"`          // 客服负责的业务, 格式位json字符串数组， 范围 缺省 ["all"]
 }
 
 // hashPassword 使用SHA256 hash密码
@@ -34,6 +37,12 @@ func CreateDefaultUsers(db *gorm.DB) error {
 				Password: "12345678", // 存储明文密码
 				Role:     "admin",
 				Avatar:   "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
+			},
+			{
+				Username: "agent",
+				Password: "12345678", // 存储明文密码
+				Role:     "agent",
+				Avatar:   "https://api.dicebear.com/7.x/avataaars/svg?seed=agent",
 			},
 		}
 
